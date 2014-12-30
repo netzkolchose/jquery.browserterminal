@@ -1,0 +1,27 @@
+{
+  "name": "jquery.browserterminal",
+  "version": "0.0.1-alpha",
+  "description": "A jquery based browser terminal.",
+  "main": "dist/js/jquery.browserterminal.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "terminal",
+    "jquery",
+    "ansi",
+    "frontend"
+  ],
+  "author": "Joerg Breitbart <j.breitbart@netzkolchose.de>",
+  "license": "MIT",
+  "dependencies": {
+    "node-ansiparser": "latest",
+    "node-ansiterminal": "git+https://github.com/netzkolchose/node-ansiterminal.git",
+    "jquery": "latest",
+    "jquery.browser": "latest"
+  },
+  "devDependencies": {
+    "node-uuid": "latest",
+    "pty.js-11": "latest"
+  }
+}

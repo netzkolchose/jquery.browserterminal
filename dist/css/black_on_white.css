@@ -1,0 +1,14 @@
+._tw {
+    background: #fff;
+    color: #000;
+}
+
+.fg-1 {color: #fff}
+.bg-1 {background-color: #000}
+.c:after {color: #fff}
+.c:before {background-color: #000}
+.fg-1.c:after {color: #000}
+.bg-1.c:before {background-color: #fff}
+
+.fg0 {color: #000}
+.bg0 {background-color: #000}

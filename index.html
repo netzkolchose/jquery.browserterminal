@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Terminal-Testpage</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="dist/css/browserterminal.css">
+    <!--<link rel="stylesheet" href="dist/css/black_on_white.css">-->
+    <script type="text/javascript" src="/node_modules/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/node_modules/jquery.browser/dist/jquery.browser.min.js"></script>
+    <script type="text/javascript" src="/node_modules/node-ansiparser/dist/ansiparser.min.js"></script>
+    <script type="text/javascript" src="/node_modules/node-ansiterminal/dist/ansiterminal.js"></script>
+    <script type="text/javascript" src="/dist/js/jquery.browserterminal.js"></script>
+    <style>
+        .terminal {
+            width: 650px;
+        }
+        .terminal-container {
+            float: left;
+            margin: 10px;
+            border: 1px solid #000;
+        }
+        .title {
+            font-family: monospace;
+            padding: 1px 5px;
+            background: #bbb;
+        }
+    </style>
+</head>
+<body>
+<div class="terminal-container">
+    <div class="title"></div>
+    <div class="terminal"></div>
+</div>
+<div class="terminal-container">
+    <div class="title"></div>
+    <div class="terminal"></div>
+</div>
+<script type="text/javascript">
+    $(function() {
+        $('.terminal').browserterminal({setTitle: function(s){$(this).siblings('.title').text(s);}});
+    });
+</script>
+</body>
+</html>

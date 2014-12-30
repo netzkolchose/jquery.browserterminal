@@ -1,0 +1,1081 @@
+._tw {
+    background: #000;
+    color: #fff;
+}
+
+.fg-1 {color: #000}
+.bg-1 {background-color: #fff}
+.c:after {color: #000}
+.c:before {background-color: #fff}
+.fg-1.c:after {color: #fff}
+.bg-1.c:before {background-color: #000}
+
+.fg0 {color: #000}
+.bg0 {background-color: #000}
+
+
+
+._tw {
+    height: 100%;
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: scroll;
+    margin: 0;
+    padding: 0;
+    white-space: pre;
+}
+
+.italic {font-style: italic}
+.underline {text-decoration: underline}
+
+.blink {
+    animation: blink 1s steps(1, start) infinite;
+    -webkit-animation: blink 1s steps(1, start) infinite;
+    visibility: hidden;
+}
+@keyframes blink {
+    50% {
+        visibility: visible;
+    }
+}
+@-webkit-keyframes blink {
+    50% {
+        visibility: visible;
+    }
+}
+
+.c {
+    position: relative;
+}
+.c:before {
+    content: '\00a0';
+    position: absolute;
+    left: 0;
+}
+.c:after {
+    position: absolute;
+    left: 0;
+    content: attr(data-contents);
+}
+.blc:before {
+    -webkit-animation: bgblink 1s steps(1, start) infinite;
+    animation: bgblink 1s steps(1, start) infinite;
+    visibility: hidden;
+}
+.blc:after {
+    -webkit-animation: fgblink 1s steps(1, start) infinite;
+    animation: bgblink 1s steps(1, start) infinite;
+    visibility: hidden;
+}
+@-webkit-keyframes bgblink {
+    50% {
+        visibility: visible;
+    }
+}
+@keyframes bgblink {
+    50% {
+        visibility: visible;
+    }
+}
+
+.c1  {font-weight: bold}
+.c22 {font-weight: normal}
+.fg0 {color: #000000}
+.fg1 {color: #bb0000}
+.fg2 {color: #00cd00}
+.fg3 {color: #cdcd00}
+.fg4 {color: #0000ee}
+.fg5 {color: #cd00cd}
+.fg6 {color: #00cdcd}
+.fg7 {color: #ffffff}
+.bg0 {background-color: #000000}
+.bg1 {background-color: #bb0000}
+.bg2 {background-color: #00cd00}
+.bg3 {background-color: #cdcd00}
+.bg4 {background-color: #0000ee}
+.bg5 {background-color: #cd00cd}
+.bg6 {background-color: #00cdcd}
+.bg7 {background-color: #eeeeee}
+
+
+.fg16 {color: rgb(0, 0, 0)}
+.fg17 {color: rgb(0, 0, 95)}
+.fg18 {color: rgb(0, 0, 135)}
+.fg19 {color: rgb(0, 0, 175)}
+.fg20 {color: rgb(0, 0, 215)}
+.fg21 {color: rgb(0, 0, 255)}
+.fg22 {color: rgb(0, 95, 0)}
+.fg23 {color: rgb(0, 95, 95)}
+.fg24 {color: rgb(0, 95, 135)}
+.fg25 {color: rgb(0, 95, 175)}
+.fg26 {color: rgb(0, 95, 215)}
+.fg27 {color: rgb(0, 95, 255)}
+.fg28 {color: rgb(0, 135, 0)}
+.fg29 {color: rgb(0, 135, 95)}
+.fg30 {color: rgb(0, 135, 135)}
+.fg31 {color: rgb(0, 135, 175)}
+.fg32 {color: rgb(0, 135, 215)}
+.fg33 {color: rgb(0, 135, 255)}
+.fg34 {color: rgb(0, 175, 0)}
+.fg35 {color: rgb(0, 175, 95)}
+.fg36 {color: rgb(0, 175, 135)}
+.fg37 {color: rgb(0, 175, 175)}
+.fg38 {color: rgb(0, 175, 215)}
+.fg39 {color: rgb(0, 175, 255)}
+.fg40 {color: rgb(0, 215, 0)}
+.fg41 {color: rgb(0, 215, 95)}
+.fg42 {color: rgb(0, 215, 135)}
+.fg43 {color: rgb(0, 215, 175)}
+.fg44 {color: rgb(0, 215, 215)}
+.fg45 {color: rgb(0, 215, 255)}
+.fg46 {color: rgb(0, 255, 0)}
+.fg47 {color: rgb(0, 255, 95)}
+.fg48 {color: rgb(0, 255, 135)}
+.fg49 {color: rgb(0, 255, 175)}
+.fg50 {color: rgb(0, 255, 215)}
+.fg51 {color: rgb(0, 255, 255)}
+.fg52 {color: rgb(95, 0, 0)}
+.fg53 {color: rgb(95, 0, 95)}
+.fg54 {color: rgb(95, 0, 135)}
+.fg55 {color: rgb(95, 0, 175)}
+.fg56 {color: rgb(95, 0, 215)}
+.fg57 {color: rgb(95, 0, 255)}
+.fg58 {color: rgb(95, 95, 0)}
+.fg59 {color: rgb(95, 95, 95)}
+.fg60 {color: rgb(95, 95, 135)}
+.fg61 {color: rgb(95, 95, 175)}
+.fg62 {color: rgb(95, 95, 215)}
+.fg63 {color: rgb(95, 95, 255)}
+.fg64 {color: rgb(95, 135, 0)}
+.fg65 {color: rgb(95, 135, 95)}
+.fg66 {color: rgb(95, 135, 135)}
+.fg67 {color: rgb(95, 135, 175)}
+.fg68 {color: rgb(95, 135, 215)}
+.fg69 {color: rgb(95, 135, 255)}
+.fg70 {color: rgb(95, 175, 0)}
+.fg71 {color: rgb(95, 175, 95)}
+.fg72 {color: rgb(95, 175, 135)}
+.fg73 {color: rgb(95, 175, 175)}
+.fg74 {color: rgb(95, 175, 215)}
+.fg75 {color: rgb(95, 175, 255)}
+.fg76 {color: rgb(95, 215, 0)}
+.fg77 {color: rgb(95, 215, 95)}
+.fg78 {color: rgb(95, 215, 135)}
+.fg79 {color: rgb(95, 215, 175)}
+.fg80 {color: rgb(95, 215, 215)}
+.fg81 {color: rgb(95, 215, 255)}
+.fg82 {color: rgb(95, 255, 0)}
+.fg83 {color: rgb(95, 255, 95)}
+.fg84 {color: rgb(95, 255, 135)}
+.fg85 {color: rgb(95, 255, 175)}
+.fg86 {color: rgb(95, 255, 215)}
+.fg87 {color: rgb(95, 255, 255)}
+.fg88 {color: rgb(135, 0, 0)}
+.fg89 {color: rgb(135, 0, 95)}
+.fg90 {color: rgb(135, 0, 135)}
+.fg91 {color: rgb(135, 0, 175)}
+.fg92 {color: rgb(135, 0, 215)}
+.fg93 {color: rgb(135, 0, 255)}
+.fg94 {color: rgb(135, 95, 0)}
+.fg95 {color: rgb(135, 95, 95)}
+.fg96 {color: rgb(135, 95, 135)}
+.fg97 {color: rgb(135, 95, 175)}
+.fg98 {color: rgb(135, 95, 215)}
+.fg99 {color: rgb(135, 95, 255)}
+.fg100 {color: rgb(135, 135, 0)}
+.fg101 {color: rgb(135, 135, 95)}
+.fg102 {color: rgb(135, 135, 135)}
+.fg103 {color: rgb(135, 135, 175)}
+.fg104 {color: rgb(135, 135, 215)}
+.fg105 {color: rgb(135, 135, 255)}
+.fg106 {color: rgb(135, 175, 0)}
+.fg107 {color: rgb(135, 175, 95)}
+.fg108 {color: rgb(135, 175, 135)}
+.fg109 {color: rgb(135, 175, 175)}
+.fg110 {color: rgb(135, 175, 215)}
+.fg111 {color: rgb(135, 175, 255)}
+.fg112 {color: rgb(135, 215, 0)}
+.fg113 {color: rgb(135, 215, 95)}
+.fg114 {color: rgb(135, 215, 135)}
+.fg115 {color: rgb(135, 215, 175)}
+.fg116 {color: rgb(135, 215, 215)}
+.fg117 {color: rgb(135, 215, 255)}
+.fg118 {color: rgb(135, 255, 0)}
+.fg119 {color: rgb(135, 255, 95)}
+.fg120 {color: rgb(135, 255, 135)}
+.fg121 {color: rgb(135, 255, 175)}
+.fg122 {color: rgb(135, 255, 215)}
+.fg123 {color: rgb(135, 255, 255)}
+.fg124 {color: rgb(175, 0, 0)}
+.fg125 {color: rgb(175, 0, 95)}
+.fg126 {color: rgb(175, 0, 135)}
+.fg127 {color: rgb(175, 0, 175)}
+.fg128 {color: rgb(175, 0, 215)}
+.fg129 {color: rgb(175, 0, 255)}
+.fg130 {color: rgb(175, 95, 0)}
+.fg131 {color: rgb(175, 95, 95)}
+.fg132 {color: rgb(175, 95, 135)}
+.fg133 {color: rgb(175, 95, 175)}
+.fg134 {color: rgb(175, 95, 215)}
+.fg135 {color: rgb(175, 95, 255)}
+.fg136 {color: rgb(175, 135, 0)}
+.fg137 {color: rgb(175, 135, 95)}
+.fg138 {color: rgb(175, 135, 135)}
+.fg139 {color: rgb(175, 135, 175)}
+.fg140 {color: rgb(175, 135, 215)}
+.fg141 {color: rgb(175, 135, 255)}
+.fg142 {color: rgb(175, 175, 0)}
+.fg143 {color: rgb(175, 175, 95)}
+.fg144 {color: rgb(175, 175, 135)}
+.fg145 {color: rgb(175, 175, 175)}
+.fg146 {color: rgb(175, 175, 215)}
+.fg147 {color: rgb(175, 175, 255)}
+.fg148 {color: rgb(175, 215, 0)}
+.fg149 {color: rgb(175, 215, 95)}
+.fg150 {color: rgb(175, 215, 135)}
+.fg151 {color: rgb(175, 215, 175)}
+.fg152 {color: rgb(175, 215, 215)}
+.fg153 {color: rgb(175, 215, 255)}
+.fg154 {color: rgb(175, 255, 0)}
+.fg155 {color: rgb(175, 255, 95)}
+.fg156 {color: rgb(175, 255, 135)}
+.fg157 {color: rgb(175, 255, 175)}
+.fg158 {color: rgb(175, 255, 215)}
+.fg159 {color: rgb(175, 255, 255)}
+.fg160 {color: rgb(215, 0, 0)}
+.fg161 {color: rgb(215, 0, 95)}
+.fg162 {color: rgb(215, 0, 135)}
+.fg163 {color: rgb(215, 0, 175)}
+.fg164 {color: rgb(215, 0, 215)}
+.fg165 {color: rgb(215, 0, 255)}
+.fg166 {color: rgb(215, 95, 0)}
+.fg167 {color: rgb(215, 95, 95)}
+.fg168 {color: rgb(215, 95, 135)}
+.fg169 {color: rgb(215, 95, 175)}
+.fg170 {color: rgb(215, 95, 215)}
+.fg171 {color: rgb(215, 95, 255)}
+.fg172 {color: rgb(215, 135, 0)}
+.fg173 {color: rgb(215, 135, 95)}
+.fg174 {color: rgb(215, 135, 135)}
+.fg175 {color: rgb(215, 135, 175)}
+.fg176 {color: rgb(215, 135, 215)}
+.fg177 {color: rgb(215, 135, 255)}
+.fg178 {color: rgb(215, 175, 0)}
+.fg179 {color: rgb(215, 175, 95)}
+.fg180 {color: rgb(215, 175, 135)}
+.fg181 {color: rgb(215, 175, 175)}
+.fg182 {color: rgb(215, 175, 215)}
+.fg183 {color: rgb(215, 175, 255)}
+.fg184 {color: rgb(215, 215, 0)}
+.fg185 {color: rgb(215, 215, 95)}
+.fg186 {color: rgb(215, 215, 135)}
+.fg187 {color: rgb(215, 215, 175)}
+.fg188 {color: rgb(215, 215, 215)}
+.fg189 {color: rgb(215, 215, 255)}
+.fg190 {color: rgb(215, 255, 0)}
+.fg191 {color: rgb(215, 255, 95)}
+.fg192 {color: rgb(215, 255, 135)}
+.fg193 {color: rgb(215, 255, 175)}
+.fg194 {color: rgb(215, 255, 215)}
+.fg195 {color: rgb(215, 255, 255)}
+.fg196 {color: rgb(255, 0, 0)}
+.fg197 {color: rgb(255, 0, 95)}
+.fg198 {color: rgb(255, 0, 135)}
+.fg199 {color: rgb(255, 0, 175)}
+.fg200 {color: rgb(255, 0, 215)}
+.fg201 {color: rgb(255, 0, 255)}
+.fg202 {color: rgb(255, 95, 0)}
+.fg203 {color: rgb(255, 95, 95)}
+.fg204 {color: rgb(255, 95, 135)}
+.fg205 {color: rgb(255, 95, 175)}
+.fg206 {color: rgb(255, 95, 215)}
+.fg207 {color: rgb(255, 95, 255)}
+.fg208 {color: rgb(255, 135, 0)}
+.fg209 {color: rgb(255, 135, 95)}
+.fg210 {color: rgb(255, 135, 135)}
+.fg211 {color: rgb(255, 135, 175)}
+.fg212 {color: rgb(255, 135, 215)}
+.fg213 {color: rgb(255, 135, 255)}
+.fg214 {color: rgb(255, 175, 0)}
+.fg215 {color: rgb(255, 175, 95)}
+.fg216 {color: rgb(255, 175, 135)}
+.fg217 {color: rgb(255, 175, 175)}
+.fg218 {color: rgb(255, 175, 215)}
+.fg219 {color: rgb(255, 175, 255)}
+.fg220 {color: rgb(255, 215, 0)}
+.fg221 {color: rgb(255, 215, 95)}
+.fg222 {color: rgb(255, 215, 135)}
+.fg223 {color: rgb(255, 215, 175)}
+.fg224 {color: rgb(255, 215, 215)}
+.fg225 {color: rgb(255, 215, 255)}
+.fg226 {color: rgb(255, 255, 0)}
+.fg227 {color: rgb(255, 255, 95)}
+.fg228 {color: rgb(255, 255, 135)}
+.fg229 {color: rgb(255, 255, 175)}
+.fg230 {color: rgb(255, 255, 215)}
+.fg231 {color: rgb(255, 255, 255)}
+.fg232 {color: rgb(8, 8, 8)}
+.fg233 {color: rgb(18, 18, 18)}
+.fg234 {color: rgb(28, 28, 28)}
+.fg235 {color: rgb(38, 38, 38)}
+.fg236 {color: rgb(48, 48, 48)}
+.fg237 {color: rgb(58, 58, 58)}
+.fg238 {color: rgb(68, 68, 68)}
+.fg239 {color: rgb(78, 78, 78)}
+.fg240 {color: rgb(88, 88, 88)}
+.fg241 {color: rgb(98, 98, 98)}
+.fg242 {color: rgb(108, 108, 108)}
+.fg243 {color: rgb(118, 118, 118)}
+.fg244 {color: rgb(128, 128, 128)}
+.fg245 {color: rgb(138, 138, 138)}
+.fg246 {color: rgb(148, 148, 148)}
+.fg247 {color: rgb(158, 158, 158)}
+.fg248 {color: rgb(168, 168, 168)}
+.fg249 {color: rgb(178, 178, 178)}
+.fg250 {color: rgb(188, 188, 188)}
+.fg251 {color: rgb(198, 198, 198)}
+.fg252 {color: rgb(208, 208, 208)}
+.fg253 {color: rgb(218, 218, 218)}
+.fg254 {color: rgb(228, 228, 228)}
+.fg255 {color: rgb(238, 238, 238)}
+
+.bg16 {background-color: rgb(0, 0, 0)}
+.bg17 {background-color: rgb(0, 0, 95)}
+.bg18 {background-color: rgb(0, 0, 135)}
+.bg19 {background-color: rgb(0, 0, 175)}
+.bg20 {background-color: rgb(0, 0, 215)}
+.bg21 {background-color: rgb(0, 0, 255)}
+.bg22 {background-color: rgb(0, 95, 0)}
+.bg23 {background-color: rgb(0, 95, 95)}
+.bg24 {background-color: rgb(0, 95, 135)}
+.bg25 {background-color: rgb(0, 95, 175)}
+.bg26 {background-color: rgb(0, 95, 215)}
+.bg27 {background-color: rgb(0, 95, 255)}
+.bg28 {background-color: rgb(0, 135, 0)}
+.bg29 {background-color: rgb(0, 135, 95)}
+.bg30 {background-color: rgb(0, 135, 135)}
+.bg31 {background-color: rgb(0, 135, 175)}
+.bg32 {background-color: rgb(0, 135, 215)}
+.bg33 {background-color: rgb(0, 135, 255)}
+.bg34 {background-color: rgb(0, 175, 0)}
+.bg35 {background-color: rgb(0, 175, 95)}
+.bg36 {background-color: rgb(0, 175, 135)}
+.bg37 {background-color: rgb(0, 175, 175)}
+.bg38 {background-color: rgb(0, 175, 215)}
+.bg39 {background-color: rgb(0, 175, 255)}
+.bg40 {background-color: rgb(0, 215, 0)}
+.bg41 {background-color: rgb(0, 215, 95)}
+.bg42 {background-color: rgb(0, 215, 135)}
+.bg43 {background-color: rgb(0, 215, 175)}
+.bg44 {background-color: rgb(0, 215, 215)}
+.bg45 {background-color: rgb(0, 215, 255)}
+.bg46 {background-color: rgb(0, 255, 0)}
+.bg47 {background-color: rgb(0, 255, 95)}
+.bg48 {background-color: rgb(0, 255, 135)}
+.bg49 {background-color: rgb(0, 255, 175)}
+.bg50 {background-color: rgb(0, 255, 215)}
+.bg51 {background-color: rgb(0, 255, 255)}
+.bg52 {background-color: rgb(95, 0, 0)}
+.bg53 {background-color: rgb(95, 0, 95)}
+.bg54 {background-color: rgb(95, 0, 135)}
+.bg55 {background-color: rgb(95, 0, 175)}
+.bg56 {background-color: rgb(95, 0, 215)}
+.bg57 {background-color: rgb(95, 0, 255)}
+.bg58 {background-color: rgb(95, 95, 0)}
+.bg59 {background-color: rgb(95, 95, 95)}
+.bg60 {background-color: rgb(95, 95, 135)}
+.bg61 {background-color: rgb(95, 95, 175)}
+.bg62 {background-color: rgb(95, 95, 215)}
+.bg63 {background-color: rgb(95, 95, 255)}
+.bg64 {background-color: rgb(95, 135, 0)}
+.bg65 {background-color: rgb(95, 135, 95)}
+.bg66 {background-color: rgb(95, 135, 135)}
+.bg67 {background-color: rgb(95, 135, 175)}
+.bg68 {background-color: rgb(95, 135, 215)}
+.bg69 {background-color: rgb(95, 135, 255)}
+.bg70 {background-color: rgb(95, 175, 0)}
+.bg71 {background-color: rgb(95, 175, 95)}
+.bg72 {background-color: rgb(95, 175, 135)}
+.bg73 {background-color: rgb(95, 175, 175)}
+.bg74 {background-color: rgb(95, 175, 215)}
+.bg75 {background-color: rgb(95, 175, 255)}
+.bg76 {background-color: rgb(95, 215, 0)}
+.bg77 {background-color: rgb(95, 215, 95)}
+.bg78 {background-color: rgb(95, 215, 135)}
+.bg79 {background-color: rgb(95, 215, 175)}
+.bg80 {background-color: rgb(95, 215, 215)}
+.bg81 {background-color: rgb(95, 215, 255)}
+.bg82 {background-color: rgb(95, 255, 0)}
+.bg83 {background-color: rgb(95, 255, 95)}
+.bg84 {background-color: rgb(95, 255, 135)}
+.bg85 {background-color: rgb(95, 255, 175)}
+.bg86 {background-color: rgb(95, 255, 215)}
+.bg87 {background-color: rgb(95, 255, 255)}
+.bg88 {background-color: rgb(135, 0, 0)}
+.bg89 {background-color: rgb(135, 0, 95)}
+.bg90 {background-color: rgb(135, 0, 135)}
+.bg91 {background-color: rgb(135, 0, 175)}
+.bg92 {background-color: rgb(135, 0, 215)}
+.bg93 {background-color: rgb(135, 0, 255)}
+.bg94 {background-color: rgb(135, 95, 0)}
+.bg95 {background-color: rgb(135, 95, 95)}
+.bg96 {background-color: rgb(135, 95, 135)}
+.bg97 {background-color: rgb(135, 95, 175)}
+.bg98 {background-color: rgb(135, 95, 215)}
+.bg99 {background-color: rgb(135, 95, 255)}
+.bg100 {background-color: rgb(135, 135, 0)}
+.bg101 {background-color: rgb(135, 135, 95)}
+.bg102 {background-color: rgb(135, 135, 135)}
+.bg103 {background-color: rgb(135, 135, 175)}
+.bg104 {background-color: rgb(135, 135, 215)}
+.bg105 {background-color: rgb(135, 135, 255)}
+.bg106 {background-color: rgb(135, 175, 0)}
+.bg107 {background-color: rgb(135, 175, 95)}
+.bg108 {background-color: rgb(135, 175, 135)}
+.bg109 {background-color: rgb(135, 175, 175)}
+.bg110 {background-color: rgb(135, 175, 215)}
+.bg111 {background-color: rgb(135, 175, 255)}
+.bg112 {background-color: rgb(135, 215, 0)}
+.bg113 {background-color: rgb(135, 215, 95)}
+.bg114 {background-color: rgb(135, 215, 135)}
+.bg115 {background-color: rgb(135, 215, 175)}
+.bg116 {background-color: rgb(135, 215, 215)}
+.bg117 {background-color: rgb(135, 215, 255)}
+.bg118 {background-color: rgb(135, 255, 0)}
+.bg119 {background-color: rgb(135, 255, 95)}
+.bg120 {background-color: rgb(135, 255, 135)}
+.bg121 {background-color: rgb(135, 255, 175)}
+.bg122 {background-color: rgb(135, 255, 215)}
+.bg123 {background-color: rgb(135, 255, 255)}
+.bg124 {background-color: rgb(175, 0, 0)}
+.bg125 {background-color: rgb(175, 0, 95)}
+.bg126 {background-color: rgb(175, 0, 135)}
+.bg127 {background-color: rgb(175, 0, 175)}
+.bg128 {background-color: rgb(175, 0, 215)}
+.bg129 {background-color: rgb(175, 0, 255)}
+.bg130 {background-color: rgb(175, 95, 0)}
+.bg131 {background-color: rgb(175, 95, 95)}
+.bg132 {background-color: rgb(175, 95, 135)}
+.bg133 {background-color: rgb(175, 95, 175)}
+.bg134 {background-color: rgb(175, 95, 215)}
+.bg135 {background-color: rgb(175, 95, 255)}
+.bg136 {background-color: rgb(175, 135, 0)}
+.bg137 {background-color: rgb(175, 135, 95)}
+.bg138 {background-color: rgb(175, 135, 135)}
+.bg139 {background-color: rgb(175, 135, 175)}
+.bg140 {background-color: rgb(175, 135, 215)}
+.bg141 {background-color: rgb(175, 135, 255)}
+.bg142 {background-color: rgb(175, 175, 0)}
+.bg143 {background-color: rgb(175, 175, 95)}
+.bg144 {background-color: rgb(175, 175, 135)}
+.bg145 {background-color: rgb(175, 175, 175)}
+.bg146 {background-color: rgb(175, 175, 215)}
+.bg147 {background-color: rgb(175, 175, 255)}
+.bg148 {background-color: rgb(175, 215, 0)}
+.bg149 {background-color: rgb(175, 215, 95)}
+.bg150 {background-color: rgb(175, 215, 135)}
+.bg151 {background-color: rgb(175, 215, 175)}
+.bg152 {background-color: rgb(175, 215, 215)}
+.bg153 {background-color: rgb(175, 215, 255)}
+.bg154 {background-color: rgb(175, 255, 0)}
+.bg155 {background-color: rgb(175, 255, 95)}
+.bg156 {background-color: rgb(175, 255, 135)}
+.bg157 {background-color: rgb(175, 255, 175)}
+.bg158 {background-color: rgb(175, 255, 215)}
+.bg159 {background-color: rgb(175, 255, 255)}
+.bg160 {background-color: rgb(215, 0, 0)}
+.bg161 {background-color: rgb(215, 0, 95)}
+.bg162 {background-color: rgb(215, 0, 135)}
+.bg163 {background-color: rgb(215, 0, 175)}
+.bg164 {background-color: rgb(215, 0, 215)}
+.bg165 {background-color: rgb(215, 0, 255)}
+.bg166 {background-color: rgb(215, 95, 0)}
+.bg167 {background-color: rgb(215, 95, 95)}
+.bg168 {background-color: rgb(215, 95, 135)}
+.bg169 {background-color: rgb(215, 95, 175)}
+.bg170 {background-color: rgb(215, 95, 215)}
+.bg171 {background-color: rgb(215, 95, 255)}
+.bg172 {background-color: rgb(215, 135, 0)}
+.bg173 {background-color: rgb(215, 135, 95)}
+.bg174 {background-color: rgb(215, 135, 135)}
+.bg175 {background-color: rgb(215, 135, 175)}
+.bg176 {background-color: rgb(215, 135, 215)}
+.bg177 {background-color: rgb(215, 135, 255)}
+.bg178 {background-color: rgb(215, 175, 0)}
+.bg179 {background-color: rgb(215, 175, 95)}
+.bg180 {background-color: rgb(215, 175, 135)}
+.bg181 {background-color: rgb(215, 175, 175)}
+.bg182 {background-color: rgb(215, 175, 215)}
+.bg183 {background-color: rgb(215, 175, 255)}
+.bg184 {background-color: rgb(215, 215, 0)}
+.bg185 {background-color: rgb(215, 215, 95)}
+.bg186 {background-color: rgb(215, 215, 135)}
+.bg187 {background-color: rgb(215, 215, 175)}
+.bg188 {background-color: rgb(215, 215, 215)}
+.bg189 {background-color: rgb(215, 215, 255)}
+.bg190 {background-color: rgb(215, 255, 0)}
+.bg191 {background-color: rgb(215, 255, 95)}
+.bg192 {background-color: rgb(215, 255, 135)}
+.bg193 {background-color: rgb(215, 255, 175)}
+.bg194 {background-color: rgb(215, 255, 215)}
+.bg195 {background-color: rgb(215, 255, 255)}
+.bg196 {background-color: rgb(255, 0, 0)}
+.bg197 {background-color: rgb(255, 0, 95)}
+.bg198 {background-color: rgb(255, 0, 135)}
+.bg199 {background-color: rgb(255, 0, 175)}
+.bg200 {background-color: rgb(255, 0, 215)}
+.bg201 {background-color: rgb(255, 0, 255)}
+.bg202 {background-color: rgb(255, 95, 0)}
+.bg203 {background-color: rgb(255, 95, 95)}
+.bg204 {background-color: rgb(255, 95, 135)}
+.bg205 {background-color: rgb(255, 95, 175)}
+.bg206 {background-color: rgb(255, 95, 215)}
+.bg207 {background-color: rgb(255, 95, 255)}
+.bg208 {background-color: rgb(255, 135, 0)}
+.bg209 {background-color: rgb(255, 135, 95)}
+.bg210 {background-color: rgb(255, 135, 135)}
+.bg211 {background-color: rgb(255, 135, 175)}
+.bg212 {background-color: rgb(255, 135, 215)}
+.bg213 {background-color: rgb(255, 135, 255)}
+.bg214 {background-color: rgb(255, 175, 0)}
+.bg215 {background-color: rgb(255, 175, 95)}
+.bg216 {background-color: rgb(255, 175, 135)}
+.bg217 {background-color: rgb(255, 175, 175)}
+.bg218 {background-color: rgb(255, 175, 215)}
+.bg219 {background-color: rgb(255, 175, 255)}
+.bg220 {background-color: rgb(255, 215, 0)}
+.bg221 {background-color: rgb(255, 215, 95)}
+.bg222 {background-color: rgb(255, 215, 135)}
+.bg223 {background-color: rgb(255, 215, 175)}
+.bg224 {background-color: rgb(255, 215, 215)}
+.bg225 {background-color: rgb(255, 215, 255)}
+.bg226 {background-color: rgb(255, 255, 0)}
+.bg227 {background-color: rgb(255, 255, 95)}
+.bg228 {background-color: rgb(255, 255, 135)}
+.bg229 {background-color: rgb(255, 255, 175)}
+.bg230 {background-color: rgb(255, 255, 215)}
+.bg231 {background-color: rgb(255, 255, 255)}
+.bg232 {background-color: rgb(8, 8, 8)}
+.bg233 {background-color: rgb(18, 18, 18)}
+.bg234 {background-color: rgb(28, 28, 28)}
+.bg235 {background-color: rgb(38, 38, 38)}
+.bg236 {background-color: rgb(48, 48, 48)}
+.bg237 {background-color: rgb(58, 58, 58)}
+.bg238 {background-color: rgb(68, 68, 68)}
+.bg239 {background-color: rgb(78, 78, 78)}
+.bg240 {background-color: rgb(88, 88, 88)}
+.bg241 {background-color: rgb(98, 98, 98)}
+.bg242 {background-color: rgb(108, 108, 108)}
+.bg243 {background-color: rgb(118, 118, 118)}
+.bg244 {background-color: rgb(128, 128, 128)}
+.bg245 {background-color: rgb(138, 138, 138)}
+.bg246 {background-color: rgb(148, 148, 148)}
+.bg247 {background-color: rgb(158, 158, 158)}
+.bg248 {background-color: rgb(168, 168, 168)}
+.bg249 {background-color: rgb(178, 178, 178)}
+.bg250 {background-color: rgb(188, 188, 188)}
+.bg251 {background-color: rgb(198, 198, 198)}
+.bg252 {background-color: rgb(208, 208, 208)}
+.bg253 {background-color: rgb(218, 218, 218)}
+.bg254 {background-color: rgb(228, 228, 228)}
+.bg255 {background-color: rgb(238, 238, 238)}
+
+
+/*.bg1.c:after {color: red;}*/
+
+.bg1.c:after {color: #bb0000}
+.bg2.c:after {color: #00cd00}
+.bg3.c:after {color: #cdcd00}
+.bg4.c:after {color: #0000ee}
+.bg5.c:after {color: #cd00cd}
+.bg6.c:after {color: #00cdcd}
+.bg7.c:after {color: #eeeeee}
+.bg16.c:after {color: rgb(0, 0, 0)}
+.bg17.c:after {color: rgb(0, 0, 95)}
+.bg18.c:after {color: rgb(0, 0, 135)}
+.bg19.c:after {color: rgb(0, 0, 175)}
+.bg20.c:after {color: rgb(0, 0, 215)}
+.bg21.c:after {color: rgb(0, 0, 255)}
+.bg22.c:after {color: rgb(0, 95, 0)}
+.bg23.c:after {color: rgb(0, 95, 95)}
+.bg24.c:after {color: rgb(0, 95, 135)}
+.bg25.c:after {color: rgb(0, 95, 175)}
+.bg26.c:after {color: rgb(0, 95, 215)}
+.bg27.c:after {color: rgb(0, 95, 255)}
+.bg28.c:after {color: rgb(0, 135, 0)}
+.bg29.c:after {color: rgb(0, 135, 95)}
+.bg30.c:after {color: rgb(0, 135, 135)}
+.bg31.c:after {color: rgb(0, 135, 175)}
+.bg32.c:after {color: rgb(0, 135, 215)}
+.bg33.c:after {color: rgb(0, 135, 255)}
+.bg34.c:after {color: rgb(0, 175, 0)}
+.bg35.c:after {color: rgb(0, 175, 95)}
+.bg36.c:after {color: rgb(0, 175, 135)}
+.bg37.c:after {color: rgb(0, 175, 175)}
+.bg38.c:after {color: rgb(0, 175, 215)}
+.bg39.c:after {color: rgb(0, 175, 255)}
+.bg40.c:after {color: rgb(0, 215, 0)}
+.bg41.c:after {color: rgb(0, 215, 95)}
+.bg42.c:after {color: rgb(0, 215, 135)}
+.bg43.c:after {color: rgb(0, 215, 175)}
+.bg44.c:after {color: rgb(0, 215, 215)}
+.bg45.c:after {color: rgb(0, 215, 255)}
+.bg46.c:after {color: rgb(0, 255, 0)}
+.bg47.c:after {color: rgb(0, 255, 95)}
+.bg48.c:after {color: rgb(0, 255, 135)}
+.bg49.c:after {color: rgb(0, 255, 175)}
+.bg50.c:after {color: rgb(0, 255, 215)}
+.bg51.c:after {color: rgb(0, 255, 255)}
+.bg52.c:after {color: rgb(95, 0, 0)}
+.bg53.c:after {color: rgb(95, 0, 95)}
+.bg54.c:after {color: rgb(95, 0, 135)}
+.bg55.c:after {color: rgb(95, 0, 175)}
+.bg56.c:after {color: rgb(95, 0, 215)}
+.bg57.c:after {color: rgb(95, 0, 255)}
+.bg58.c:after {color: rgb(95, 95, 0)}
+.bg59.c:after {color: rgb(95, 95, 95)}
+.bg60.c:after {color: rgb(95, 95, 135)}
+.bg61.c:after {color: rgb(95, 95, 175)}
+.bg62.c:after {color: rgb(95, 95, 215)}
+.bg63.c:after {color: rgb(95, 95, 255)}
+.bg64.c:after {color: rgb(95, 135, 0)}
+.bg65.c:after {color: rgb(95, 135, 95)}
+.bg66.c:after {color: rgb(95, 135, 135)}
+.bg67.c:after {color: rgb(95, 135, 175)}
+.bg68.c:after {color: rgb(95, 135, 215)}
+.bg69.c:after {color: rgb(95, 135, 255)}
+.bg70.c:after {color: rgb(95, 175, 0)}
+.bg71.c:after {color: rgb(95, 175, 95)}
+.bg72.c:after {color: rgb(95, 175, 135)}
+.bg73.c:after {color: rgb(95, 175, 175)}
+.bg74.c:after {color: rgb(95, 175, 215)}
+.bg75.c:after {color: rgb(95, 175, 255)}
+.bg76.c:after {color: rgb(95, 215, 0)}
+.bg77.c:after {color: rgb(95, 215, 95)}
+.bg78.c:after {color: rgb(95, 215, 135)}
+.bg79.c:after {color: rgb(95, 215, 175)}
+.bg80.c:after {color: rgb(95, 215, 215)}
+.bg81.c:after {color: rgb(95, 215, 255)}
+.bg82.c:after {color: rgb(95, 255, 0)}
+.bg83.c:after {color: rgb(95, 255, 95)}
+.bg84.c:after {color: rgb(95, 255, 135)}
+.bg85.c:after {color: rgb(95, 255, 175)}
+.bg86.c:after {color: rgb(95, 255, 215)}
+.bg87.c:after {color: rgb(95, 255, 255)}
+.bg88.c:after {color: rgb(135, 0, 0)}
+.bg89.c:after {color: rgb(135, 0, 95)}
+.bg90.c:after {color: rgb(135, 0, 135)}
+.bg91.c:after {color: rgb(135, 0, 175)}
+.bg92.c:after {color: rgb(135, 0, 215)}
+.bg93.c:after {color: rgb(135, 0, 255)}
+.bg94.c:after {color: rgb(135, 95, 0)}
+.bg95.c:after {color: rgb(135, 95, 95)}
+.bg96.c:after {color: rgb(135, 95, 135)}
+.bg97.c:after {color: rgb(135, 95, 175)}
+.bg98.c:after {color: rgb(135, 95, 215)}
+.bg99.c:after {color: rgb(135, 95, 255)}
+.bg100.c:after {color: rgb(135, 135, 0)}
+.bg101.c:after {color: rgb(135, 135, 95)}
+.bg102.c:after {color: rgb(135, 135, 135)}
+.bg103.c:after {color: rgb(135, 135, 175)}
+.bg104.c:after {color: rgb(135, 135, 215)}
+.bg105.c:after {color: rgb(135, 135, 255)}
+.bg106.c:after {color: rgb(135, 175, 0)}
+.bg107.c:after {color: rgb(135, 175, 95)}
+.bg108.c:after {color: rgb(135, 175, 135)}
+.bg109.c:after {color: rgb(135, 175, 175)}
+.bg110.c:after {color: rgb(135, 175, 215)}
+.bg111.c:after {color: rgb(135, 175, 255)}
+.bg112.c:after {color: rgb(135, 215, 0)}
+.bg113.c:after {color: rgb(135, 215, 95)}
+.bg114.c:after {color: rgb(135, 215, 135)}
+.bg115.c:after {color: rgb(135, 215, 175)}
+.bg116.c:after {color: rgb(135, 215, 215)}
+.bg117.c:after {color: rgb(135, 215, 255)}
+.bg118.c:after {color: rgb(135, 255, 0)}
+.bg119.c:after {color: rgb(135, 255, 95)}
+.bg120.c:after {color: rgb(135, 255, 135)}
+.bg121.c:after {color: rgb(135, 255, 175)}
+.bg122.c:after {color: rgb(135, 255, 215)}
+.bg123.c:after {color: rgb(135, 255, 255)}
+.bg124.c:after {color: rgb(175, 0, 0)}
+.bg125.c:after {color: rgb(175, 0, 95)}
+.bg126.c:after {color: rgb(175, 0, 135)}
+.bg127.c:after {color: rgb(175, 0, 175)}
+.bg128.c:after {color: rgb(175, 0, 215)}
+.bg129.c:after {color: rgb(175, 0, 255)}
+.bg130.c:after {color: rgb(175, 95, 0)}
+.bg131.c:after {color: rgb(175, 95, 95)}
+.bg132.c:after {color: rgb(175, 95, 135)}
+.bg133.c:after {color: rgb(175, 95, 175)}
+.bg134.c:after {color: rgb(175, 95, 215)}
+.bg135.c:after {color: rgb(175, 95, 255)}
+.bg136.c:after {color: rgb(175, 135, 0)}
+.bg137.c:after {color: rgb(175, 135, 95)}
+.bg138.c:after {color: rgb(175, 135, 135)}
+.bg139.c:after {color: rgb(175, 135, 175)}
+.bg140.c:after {color: rgb(175, 135, 215)}
+.bg141.c:after {color: rgb(175, 135, 255)}
+.bg142.c:after {color: rgb(175, 175, 0)}
+.bg143.c:after {color: rgb(175, 175, 95)}
+.bg144.c:after {color: rgb(175, 175, 135)}
+.bg145.c:after {color: rgb(175, 175, 175)}
+.bg146.c:after {color: rgb(175, 175, 215)}
+.bg147.c:after {color: rgb(175, 175, 255)}
+.bg148.c:after {color: rgb(175, 215, 0)}
+.bg149.c:after {color: rgb(175, 215, 95)}
+.bg150.c:after {color: rgb(175, 215, 135)}
+.bg151.c:after {color: rgb(175, 215, 175)}
+.bg152.c:after {color: rgb(175, 215, 215)}
+.bg153.c:after {color: rgb(175, 215, 255)}
+.bg154.c:after {color: rgb(175, 255, 0)}
+.bg155.c:after {color: rgb(175, 255, 95)}
+.bg156.c:after {color: rgb(175, 255, 135)}
+.bg157.c:after {color: rgb(175, 255, 175)}
+.bg158.c:after {color: rgb(175, 255, 215)}
+.bg159.c:after {color: rgb(175, 255, 255)}
+.bg160.c:after {color: rgb(215, 0, 0)}
+.bg161.c:after {color: rgb(215, 0, 95)}
+.bg162.c:after {color: rgb(215, 0, 135)}
+.bg163.c:after {color: rgb(215, 0, 175)}
+.bg164.c:after {color: rgb(215, 0, 215)}
+.bg165.c:after {color: rgb(215, 0, 255)}
+.bg166.c:after {color: rgb(215, 95, 0)}
+.bg167.c:after {color: rgb(215, 95, 95)}
+.bg168.c:after {color: rgb(215, 95, 135)}
+.bg169.c:after {color: rgb(215, 95, 175)}
+.bg170.c:after {color: rgb(215, 95, 215)}
+.bg171.c:after {color: rgb(215, 95, 255)}
+.bg172.c:after {color: rgb(215, 135, 0)}
+.bg173.c:after {color: rgb(215, 135, 95)}
+.bg174.c:after {color: rgb(215, 135, 135)}
+.bg175.c:after {color: rgb(215, 135, 175)}
+.bg176.c:after {color: rgb(215, 135, 215)}
+.bg177.c:after {color: rgb(215, 135, 255)}
+.bg178.c:after {color: rgb(215, 175, 0)}
+.bg179.c:after {color: rgb(215, 175, 95)}
+.bg180.c:after {color: rgb(215, 175, 135)}
+.bg181.c:after {color: rgb(215, 175, 175)}
+.bg182.c:after {color: rgb(215, 175, 215)}
+.bg183.c:after {color: rgb(215, 175, 255)}
+.bg184.c:after {color: rgb(215, 215, 0)}
+.bg185.c:after {color: rgb(215, 215, 95)}
+.bg186.c:after {color: rgb(215, 215, 135)}
+.bg187.c:after {color: rgb(215, 215, 175)}
+.bg188.c:after {color: rgb(215, 215, 215)}
+.bg189.c:after {color: rgb(215, 215, 255)}
+.bg190.c:after {color: rgb(215, 255, 0)}
+.bg191.c:after {color: rgb(215, 255, 95)}
+.bg192.c:after {color: rgb(215, 255, 135)}
+.bg193.c:after {color: rgb(215, 255, 175)}
+.bg194.c:after {color: rgb(215, 255, 215)}
+.bg195.c:after {color: rgb(215, 255, 255)}
+.bg196.c:after {color: rgb(255, 0, 0)}
+.bg197.c:after {color: rgb(255, 0, 95)}
+.bg198.c:after {color: rgb(255, 0, 135)}
+.bg199.c:after {color: rgb(255, 0, 175)}
+.bg200.c:after {color: rgb(255, 0, 215)}
+.bg201.c:after {color: rgb(255, 0, 255)}
+.bg202.c:after {color: rgb(255, 95, 0)}
+.bg203.c:after {color: rgb(255, 95, 95)}
+.bg204.c:after {color: rgb(255, 95, 135)}
+.bg205.c:after {color: rgb(255, 95, 175)}
+.bg206.c:after {color: rgb(255, 95, 215)}
+.bg207.c:after {color: rgb(255, 95, 255)}
+.bg208.c:after {color: rgb(255, 135, 0)}
+.bg209.c:after {color: rgb(255, 135, 95)}
+.bg210.c:after {color: rgb(255, 135, 135)}
+.bg211.c:after {color: rgb(255, 135, 175)}
+.bg212.c:after {color: rgb(255, 135, 215)}
+.bg213.c:after {color: rgb(255, 135, 255)}
+.bg214.c:after {color: rgb(255, 175, 0)}
+.bg215.c:after {color: rgb(255, 175, 95)}
+.bg216.c:after {color: rgb(255, 175, 135)}
+.bg217.c:after {color: rgb(255, 175, 175)}
+.bg218.c:after {color: rgb(255, 175, 215)}
+.bg219.c:after {color: rgb(255, 175, 255)}
+.bg220.c:after {color: rgb(255, 215, 0)}
+.bg221.c:after {color: rgb(255, 215, 95)}
+.bg222.c:after {color: rgb(255, 215, 135)}
+.bg223.c:after {color: rgb(255, 215, 175)}
+.bg224.c:after {color: rgb(255, 215, 215)}
+.bg225.c:after {color: rgb(255, 215, 255)}
+.bg226.c:after {color: rgb(255, 255, 0)}
+.bg227.c:after {color: rgb(255, 255, 95)}
+.bg228.c:after {color: rgb(255, 255, 135)}
+.bg229.c:after {color: rgb(255, 255, 175)}
+.bg230.c:after {color: rgb(255, 255, 215)}
+.bg231.c:after {color: rgb(255, 255, 255)}
+.bg232.c:after {color: rgb(8, 8, 8)}
+.bg233.c:after {color: rgb(18, 18, 18)}
+.bg234.c:after {color: rgb(28, 28, 28)}
+.bg235.c:after {color: rgb(38, 38, 38)}
+.bg236.c:after {color: rgb(48, 48, 48)}
+.bg237.c:after {color: rgb(58, 58, 58)}
+.bg238.c:after {color: rgb(68, 68, 68)}
+.bg239.c:after {color: rgb(78, 78, 78)}
+.bg240.c:after {color: rgb(88, 88, 88)}
+.bg241.c:after {color: rgb(98, 98, 98)}
+.bg242.c:after {color: rgb(108, 108, 108)}
+.bg243.c:after {color: rgb(118, 118, 118)}
+.bg244.c:after {color: rgb(128, 128, 128)}
+.bg245.c:after {color: rgb(138, 138, 138)}
+.bg246.c:after {color: rgb(148, 148, 148)}
+.bg247.c:after {color: rgb(158, 158, 158)}
+.bg248.c:after {color: rgb(168, 168, 168)}
+.bg249.c:after {color: rgb(178, 178, 178)}
+.bg250.c:after {color: rgb(188, 188, 188)}
+.bg251.c:after {color: rgb(198, 198, 198)}
+.bg252.c:after {color: rgb(208, 208, 208)}
+.bg253.c:after {color: rgb(218, 218, 218)}
+.bg254.c:after {color: rgb(228, 228, 228)}
+.bg255.c:after {color: rgb(238, 238, 238)}
+
+
+.fg1.c:before {background-color: #bb0000}
+.fg2.c:before {background-color: #00cd00}
+.fg3.c:before {background-color: #cdcd00}
+.fg4.c:before {background-color: #0000ee}
+.fg5.c:before {background-color: #cd00cd}
+.fg6.c:before {background-color: #00cdcd}
+.fg7.c:before {background-color: #eeeeee}
+.fg16.c:before {background-color: rgb(0, 0, 0)}
+.fg17.c:before {background-color: rgb(0, 0, 95)}
+.fg18.c:before {background-color: rgb(0, 0, 135)}
+.fg19.c:before {background-color: rgb(0, 0, 175)}
+.fg20.c:before {background-color: rgb(0, 0, 215)}
+.fg21.c:before {background-color: rgb(0, 0, 255)}
+.fg22.c:before {background-color: rgb(0, 95, 0)}
+.fg23.c:before {background-color: rgb(0, 95, 95)}
+.fg24.c:before {background-color: rgb(0, 95, 135)}
+.fg25.c:before {background-color: rgb(0, 95, 175)}
+.fg26.c:before {background-color: rgb(0, 95, 215)}
+.fg27.c:before {background-color: rgb(0, 95, 255)}
+.fg28.c:before {background-color: rgb(0, 135, 0)}
+.fg29.c:before {background-color: rgb(0, 135, 95)}
+.fg30.c:before {background-color: rgb(0, 135, 135)}
+.fg31.c:before {background-color: rgb(0, 135, 175)}
+.fg32.c:before {background-color: rgb(0, 135, 215)}
+.fg33.c:before {background-color: rgb(0, 135, 255)}
+.fg34.c:before {background-color: rgb(0, 175, 0)}
+.fg35.c:before {background-color: rgb(0, 175, 95)}
+.fg36.c:before {background-color: rgb(0, 175, 135)}
+.fg37.c:before {background-color: rgb(0, 175, 175)}
+.fg38.c:before {background-color: rgb(0, 175, 215)}
+.fg39.c:before {background-color: rgb(0, 175, 255)}
+.fg40.c:before {background-color: rgb(0, 215, 0)}
+.fg41.c:before {background-color: rgb(0, 215, 95)}
+.fg42.c:before {background-color: rgb(0, 215, 135)}
+.fg43.c:before {background-color: rgb(0, 215, 175)}
+.fg44.c:before {background-color: rgb(0, 215, 215)}
+.fg45.c:before {background-color: rgb(0, 215, 255)}
+.fg46.c:before {background-color: rgb(0, 255, 0)}
+.fg47.c:before {background-color: rgb(0, 255, 95)}
+.fg48.c:before {background-color: rgb(0, 255, 135)}
+.fg49.c:before {background-color: rgb(0, 255, 175)}
+.fg50.c:before {background-color: rgb(0, 255, 215)}
+.fg51.c:before {background-color: rgb(0, 255, 255)}
+.fg52.c:before {background-color: rgb(95, 0, 0)}
+.fg53.c:before {background-color: rgb(95, 0, 95)}
+.fg54.c:before {background-color: rgb(95, 0, 135)}
+.fg55.c:before {background-color: rgb(95, 0, 175)}
+.fg56.c:before {background-color: rgb(95, 0, 215)}
+.fg57.c:before {background-color: rgb(95, 0, 255)}
+.fg58.c:before {background-color: rgb(95, 95, 0)}
+.fg59.c:before {background-color: rgb(95, 95, 95)}
+.fg60.c:before {background-color: rgb(95, 95, 135)}
+.fg61.c:before {background-color: rgb(95, 95, 175)}
+.fg62.c:before {background-color: rgb(95, 95, 215)}
+.fg63.c:before {background-color: rgb(95, 95, 255)}
+.fg64.c:before {background-color: rgb(95, 135, 0)}
+.fg65.c:before {background-color: rgb(95, 135, 95)}
+.fg66.c:before {background-color: rgb(95, 135, 135)}
+.fg67.c:before {background-color: rgb(95, 135, 175)}
+.fg68.c:before {background-color: rgb(95, 135, 215)}
+.fg69.c:before {background-color: rgb(95, 135, 255)}
+.fg70.c:before {background-color: rgb(95, 175, 0)}
+.fg71.c:before {background-color: rgb(95, 175, 95)}
+.fg72.c:before {background-color: rgb(95, 175, 135)}
+.fg73.c:before {background-color: rgb(95, 175, 175)}
+.fg74.c:before {background-color: rgb(95, 175, 215)}
+.fg75.c:before {background-color: rgb(95, 175, 255)}
+.fg76.c:before {background-color: rgb(95, 215, 0)}
+.fg77.c:before {background-color: rgb(95, 215, 95)}
+.fg78.c:before {background-color: rgb(95, 215, 135)}
+.fg79.c:before {background-color: rgb(95, 215, 175)}
+.fg80.c:before {background-color: rgb(95, 215, 215)}
+.fg81.c:before {background-color: rgb(95, 215, 255)}
+.fg82.c:before {background-color: rgb(95, 255, 0)}
+.fg83.c:before {background-color: rgb(95, 255, 95)}
+.fg84.c:before {background-color: rgb(95, 255, 135)}
+.fg85.c:before {background-color: rgb(95, 255, 175)}
+.fg86.c:before {background-color: rgb(95, 255, 215)}
+.fg87.c:before {background-color: rgb(95, 255, 255)}
+.fg88.c:before {background-color: rgb(135, 0, 0)}
+.fg89.c:before {background-color: rgb(135, 0, 95)}
+.fg90.c:before {background-color: rgb(135, 0, 135)}
+.fg91.c:before {background-color: rgb(135, 0, 175)}
+.fg92.c:before {background-color: rgb(135, 0, 215)}
+.fg93.c:before {background-color: rgb(135, 0, 255)}
+.fg94.c:before {background-color: rgb(135, 95, 0)}
+.fg95.c:before {background-color: rgb(135, 95, 95)}
+.fg96.c:before {background-color: rgb(135, 95, 135)}
+.fg97.c:before {background-color: rgb(135, 95, 175)}
+.fg98.c:before {background-color: rgb(135, 95, 215)}
+.fg99.c:before {background-color: rgb(135, 95, 255)}
+.fg100.c:before {background-color: rgb(135, 135, 0)}
+.fg101.c:before {background-color: rgb(135, 135, 95)}
+.fg102.c:before {background-color: rgb(135, 135, 135)}
+.fg103.c:before {background-color: rgb(135, 135, 175)}
+.fg104.c:before {background-color: rgb(135, 135, 215)}
+.fg105.c:before {background-color: rgb(135, 135, 255)}
+.fg106.c:before {background-color: rgb(135, 175, 0)}
+.fg107.c:before {background-color: rgb(135, 175, 95)}
+.fg108.c:before {background-color: rgb(135, 175, 135)}
+.fg109.c:before {background-color: rgb(135, 175, 175)}
+.fg110.c:before {background-color: rgb(135, 175, 215)}
+.fg111.c:before {background-color: rgb(135, 175, 255)}
+.fg112.c:before {background-color: rgb(135, 215, 0)}
+.fg113.c:before {background-color: rgb(135, 215, 95)}
+.fg114.c:before {background-color: rgb(135, 215, 135)}
+.fg115.c:before {background-color: rgb(135, 215, 175)}
+.fg116.c:before {background-color: rgb(135, 215, 215)}
+.fg117.c:before {background-color: rgb(135, 215, 255)}
+.fg118.c:before {background-color: rgb(135, 255, 0)}
+.fg119.c:before {background-color: rgb(135, 255, 95)}
+.fg120.c:before {background-color: rgb(135, 255, 135)}
+.fg121.c:before {background-color: rgb(135, 255, 175)}
+.fg122.c:before {background-color: rgb(135, 255, 215)}
+.fg123.c:before {background-color: rgb(135, 255, 255)}
+.fg124.c:before {background-color: rgb(175, 0, 0)}
+.fg125.c:before {background-color: rgb(175, 0, 95)}
+.fg126.c:before {background-color: rgb(175, 0, 135)}
+.fg127.c:before {background-color: rgb(175, 0, 175)}
+.fg128.c:before {background-color: rgb(175, 0, 215)}
+.fg129.c:before {background-color: rgb(175, 0, 255)}
+.fg130.c:before {background-color: rgb(175, 95, 0)}
+.fg131.c:before {background-color: rgb(175, 95, 95)}
+.fg132.c:before {background-color: rgb(175, 95, 135)}
+.fg133.c:before {background-color: rgb(175, 95, 175)}
+.fg134.c:before {background-color: rgb(175, 95, 215)}
+.fg135.c:before {background-color: rgb(175, 95, 255)}
+.fg136.c:before {background-color: rgb(175, 135, 0)}
+.fg137.c:before {background-color: rgb(175, 135, 95)}
+.fg138.c:before {background-color: rgb(175, 135, 135)}
+.fg139.c:before {background-color: rgb(175, 135, 175)}
+.fg140.c:before {background-color: rgb(175, 135, 215)}
+.fg141.c:before {background-color: rgb(175, 135, 255)}
+.fg142.c:before {background-color: rgb(175, 175, 0)}
+.fg143.c:before {background-color: rgb(175, 175, 95)}
+.fg144.c:before {background-color: rgb(175, 175, 135)}
+.fg145.c:before {background-color: rgb(175, 175, 175)}
+.fg146.c:before {background-color: rgb(175, 175, 215)}
+.fg147.c:before {background-color: rgb(175, 175, 255)}
+.fg148.c:before {background-color: rgb(175, 215, 0)}
+.fg149.c:before {background-color: rgb(175, 215, 95)}
+.fg150.c:before {background-color: rgb(175, 215, 135)}
+.fg151.c:before {background-color: rgb(175, 215, 175)}
+.fg152.c:before {background-color: rgb(175, 215, 215)}
+.fg153.c:before {background-color: rgb(175, 215, 255)}
+.fg154.c:before {background-color: rgb(175, 255, 0)}
+.fg155.c:before {background-color: rgb(175, 255, 95)}
+.fg156.c:before {background-color: rgb(175, 255, 135)}
+.fg157.c:before {background-color: rgb(175, 255, 175)}
+.fg158.c:before {background-color: rgb(175, 255, 215)}
+.fg159.c:before {background-color: rgb(175, 255, 255)}
+.fg160.c:before {background-color: rgb(215, 0, 0)}
+.fg161.c:before {background-color: rgb(215, 0, 95)}
+.fg162.c:before {background-color: rgb(215, 0, 135)}
+.fg163.c:before {background-color: rgb(215, 0, 175)}
+.fg164.c:before {background-color: rgb(215, 0, 215)}
+.fg165.c:before {background-color: rgb(215, 0, 255)}
+.fg166.c:before {background-color: rgb(215, 95, 0)}
+.fg167.c:before {background-color: rgb(215, 95, 95)}
+.fg168.c:before {background-color: rgb(215, 95, 135)}
+.fg169.c:before {background-color: rgb(215, 95, 175)}
+.fg170.c:before {background-color: rgb(215, 95, 215)}
+.fg171.c:before {background-color: rgb(215, 95, 255)}
+.fg172.c:before {background-color: rgb(215, 135, 0)}
+.fg173.c:before {background-color: rgb(215, 135, 95)}
+.fg174.c:before {background-color: rgb(215, 135, 135)}
+.fg175.c:before {background-color: rgb(215, 135, 175)}
+.fg176.c:before {background-color: rgb(215, 135, 215)}
+.fg177.c:before {background-color: rgb(215, 135, 255)}
+.fg178.c:before {background-color: rgb(215, 175, 0)}
+.fg179.c:before {background-color: rgb(215, 175, 95)}
+.fg180.c:before {background-color: rgb(215, 175, 135)}
+.fg181.c:before {background-color: rgb(215, 175, 175)}
+.fg182.c:before {background-color: rgb(215, 175, 215)}
+.fg183.c:before {background-color: rgb(215, 175, 255)}
+.fg184.c:before {background-color: rgb(215, 215, 0)}
+.fg185.c:before {background-color: rgb(215, 215, 95)}
+.fg186.c:before {background-color: rgb(215, 215, 135)}
+.fg187.c:before {background-color: rgb(215, 215, 175)}
+.fg188.c:before {background-color: rgb(215, 215, 215)}
+.fg189.c:before {background-color: rgb(215, 215, 255)}
+.fg190.c:before {background-color: rgb(215, 255, 0)}
+.fg191.c:before {background-color: rgb(215, 255, 95)}
+.fg192.c:before {background-color: rgb(215, 255, 135)}
+.fg193.c:before {background-color: rgb(215, 255, 175)}
+.fg194.c:before {background-color: rgb(215, 255, 215)}
+.fg195.c:before {background-color: rgb(215, 255, 255)}
+.fg196.c:before {background-color: rgb(255, 0, 0)}
+.fg197.c:before {background-color: rgb(255, 0, 95)}
+.fg198.c:before {background-color: rgb(255, 0, 135)}
+.fg199.c:before {background-color: rgb(255, 0, 175)}
+.fg200.c:before {background-color: rgb(255, 0, 215)}
+.fg201.c:before {background-color: rgb(255, 0, 255)}
+.fg202.c:before {background-color: rgb(255, 95, 0)}
+.fg203.c:before {background-color: rgb(255, 95, 95)}
+.fg204.c:before {background-color: rgb(255, 95, 135)}
+.fg205.c:before {background-color: rgb(255, 95, 175)}
+.fg206.c:before {background-color: rgb(255, 95, 215)}
+.fg207.c:before {background-color: rgb(255, 95, 255)}
+.fg208.c:before {background-color: rgb(255, 135, 0)}
+.fg209.c:before {background-color: rgb(255, 135, 95)}
+.fg210.c:before {background-color: rgb(255, 135, 135)}
+.fg211.c:before {background-color: rgb(255, 135, 175)}
+.fg212.c:before {background-color: rgb(255, 135, 215)}
+.fg213.c:before {background-color: rgb(255, 135, 255)}
+.fg214.c:before {background-color: rgb(255, 175, 0)}
+.fg215.c:before {background-color: rgb(255, 175, 95)}
+.fg216.c:before {background-color: rgb(255, 175, 135)}
+.fg217.c:before {background-color: rgb(255, 175, 175)}
+.fg218.c:before {background-color: rgb(255, 175, 215)}
+.fg219.c:before {background-color: rgb(255, 175, 255)}
+.fg220.c:before {background-color: rgb(255, 215, 0)}
+.fg221.c:before {background-color: rgb(255, 215, 95)}
+.fg222.c:before {background-color: rgb(255, 215, 135)}
+.fg223.c:before {background-color: rgb(255, 215, 175)}
+.fg224.c:before {background-color: rgb(255, 215, 215)}
+.fg225.c:before {background-color: rgb(255, 215, 255)}
+.fg226.c:before {background-color: rgb(255, 255, 0)}
+.fg227.c:before {background-color: rgb(255, 255, 95)}
+.fg228.c:before {background-color: rgb(255, 255, 135)}
+.fg229.c:before {background-color: rgb(255, 255, 175)}
+.fg230.c:before {background-color: rgb(255, 255, 215)}
+.fg231.c:before {background-color: rgb(255, 255, 255)}
+.fg232.c:before {background-color: rgb(8, 8, 8)}
+.fg233.c:before {background-color: rgb(18, 18, 18)}
+.fg234.c:before {background-color: rgb(28, 28, 28)}
+.fg235.c:before {background-color: rgb(38, 38, 38)}
+.fg236.c:before {background-color: rgb(48, 48, 48)}
+.fg237.c:before {background-color: rgb(58, 58, 58)}
+.fg238.c:before {background-color: rgb(68, 68, 68)}
+.fg239.c:before {background-color: rgb(78, 78, 78)}
+.fg240.c:before {background-color: rgb(88, 88, 88)}
+.fg241.c:before {background-color: rgb(98, 98, 98)}
+.fg242.c:before {background-color: rgb(108, 108, 108)}
+.fg243.c:before {background-color: rgb(118, 118, 118)}
+.fg244.c:before {background-color: rgb(128, 128, 128)}
+.fg245.c:before {background-color: rgb(138, 138, 138)}
+.fg246.c:before {background-color: rgb(148, 148, 148)}
+.fg247.c:before {background-color: rgb(158, 158, 158)}
+.fg248.c:before {background-color: rgb(168, 168, 168)}
+.fg249.c:before {background-color: rgb(178, 178, 178)}
+.fg250.c:before {background-color: rgb(188, 188, 188)}
+.fg251.c:before {background-color: rgb(198, 198, 198)}
+.fg252.c:before {background-color: rgb(208, 208, 208)}
+.fg253.c:before {background-color: rgb(218, 218, 218)}
+.fg254.c:before {background-color: rgb(228, 228, 228)}
+.fg255.c:before {background-color: rgb(238, 238, 238)}
