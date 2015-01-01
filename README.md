@@ -11,7 +11,6 @@ Run `npm install` in package directory.
 Run `npm start` and point your browser to http://localhost:8000
 
 ### TODO
-* scrolling
 * resize
 * make read/write callbacks configurable
 * better keyhandling

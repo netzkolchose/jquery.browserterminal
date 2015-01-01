@@ -111,19 +111,53 @@
         document.onkeypress = this.handle_keys(this);
         document.onpaste = this.handle_paste;
     }
+    
+    // html escape
+    var entityMap = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
+        '/': '&#47;'
+    };
 
-    if (window['_browserterminal_keyhandler'] == undefined)
-        window['_browserterminal_keyhandler'] = new KeyHandler();
+    function escapeHtml(string) {
+        return String(string).replace(/[&<>"'\/]/g, function (s) {
+            return entityMap[s];
+        });
+    }
+
+    // fast innerHTML replacement
+    function replaceHtml(el, html) {
+        //var oldEl = typeof el === "string" ? document.getElementById(el) : el;
+        var oldEl = el;
+        /*@cc_on // Pure innerHTML is slightly faster in IE
+         oldEl.innerHTML = html;
+         return oldEl;
+         @*/
+        var newEl = oldEl.cloneNode(false);
+        newEl.innerHTML = html;
+        oldEl.parentNode.replaceChild(newEl, oldEl);
+        /* Since we just removed the old element from the DOM, return a reference
+         to the new element, which can be used to restore variable references. */
+        return newEl;
+    }
     
     function BrowserTerminal(el, options) {
         this.that = this;
         this.el = $(el);
         this.el = $(el);
-        this.el.html('<pre class="_tw" contenteditable="true" spellcheck="false"></pre>');
+        this.el.html('<pre class="_tw" contenteditable="true" spellcheck="false"><span class="scrollbuffer"><span class="_sc"></span></span><span class="buffer"></span></pre>');
         this.container = this.el.children('pre._tw');
+        this.el_scroll = this.container.children('.scrollbuffer');
+        this.el_sc = this.container.find('._sc')[0];
+        this.el_buffer = this.container.children('.buffer')[0];
         this.terminal = new AnsiTerminal(options.size[0], options.size[1]);
         this.parser = new AnsiParser(this.terminal);
         this.chars = '';
+        this.scroll_buffer = [];
+        this.bufferLength = (options.bufferLength>500) ? options.bufferLength : 500;
         
         // beep
         this.beepElement = new Audio('/audio/beep.mp3');
@@ -132,8 +166,30 @@
         this.beepElement.volume = 1;
         $('body').append(this.beepElement);
         
-        this.terminal.send = (function(that) {return function(s) {that.chars += s;}})(this);
-        this.terminal.beep = (function(that) {return function(tone, duration) {that.beepElement.play();}})(this);
+        // callbacks
+        this.terminal.appendScrollBuffer = (function(that){
+            return function(elems){
+                //that.scroll_buffer.push(elems);
+                that.scroll_buffer.push(that.printScrollBuffer([elems]));
+            }
+        })(this);
+        this.terminal.clearScrollBuffer = (function(that){
+            return function(){
+                that.scroll_buffer=[];
+                that.el_scroll[0].innerHTML = '<span class="_sc"></span>';
+                that.el_sc = that.container.find('._sc')[0];
+            }
+        })(this);
+        this.terminal.send = (function(that) {
+            return function(s) {
+                that.chars += s;
+            }
+        })(this);
+        this.terminal.beep = (function(that) {
+            return function(tone, duration) {
+                that.beepElement.play();
+            }
+        })(this);
         this.setTitle = options.setTitle || function() {};
 
         this.write = function(s) {
@@ -192,7 +248,33 @@
                         }
                         old_attr = attr;
                     }
-                    s += this.terminal.buffer[i][j].c || '\xa0';
+                    s += escapeHtml(this.terminal.buffer[i][j].c || '\xa0');
+                }
+                if (old_attr) {
+                    s += '</span>';
+                    old_attr = null;
+                }
+                s += '\n';
+            }
+            return s;
+        };
+        
+        this.printScrollBuffer = function(buffer) {
+            var s = '',
+                old_attr = null,
+                attr = null;
+            for (var i=0; i<buffer.length; ++i) {
+                for (var j=0; j<buffer[i].length; ++j) {
+                    attr = buffer[i][j].attributes;
+                    if (old_attr !== attr) {
+                        if (old_attr)
+                            s += '</span>';
+                        if (attr) {
+                                s += '<span class="' + attr.join('').trim() + '">';
+                        }
+                        old_attr = attr;
+                    }
+                    s += escapeHtml(buffer[i][j].c || '\xa0');
                 }
                 if (old_attr) {
                     s += '</span>';
@@ -225,10 +307,48 @@
             // FIXME: get rid of the recursion!!!
             return function(s) {
                 if (s) {
+                    // save old scroll offset and buffer
+                    var scrollLength = that.scroll_buffer.length;
+                    var oldBuffer = that.terminal.buffer;
+                    
                     that.write(s);
-                    that.container[0].innerHTML = that.toString();
-                    $('#title').text(that.terminal.title);
+                    
+                    // scroll handling and output
+                    var scrollBlock = 100;  // put n lines into one scroll block
+                    if (that.terminal.buffer == that.terminal.normal_buffer) {
+                        if (scrollLength<that.scroll_buffer.length) {
+                            var start = Math.floor(scrollLength/scrollBlock);
+                            var end = Math.floor(that.scroll_buffer.length/scrollBlock);
+                            that.el_sc = replaceHtml(that.el_sc,
+                                that.scroll_buffer.slice(start * scrollBlock, start * scrollBlock + scrollBlock).join(''));
+                            for (var i = start+1; i <= end; ++i) {
+                                that.el_sc = $('<span>', {class: '_sc'})[0];
+                                that.el_scroll.append(that.el_sc);
+                                that.el_sc = replaceHtml(that.el_sc,
+                                    that.scroll_buffer.slice(i * scrollBlock, i * scrollBlock + scrollBlock).join(''));
+                            }
+                            // truncate buffer
+                            while (that.scroll_buffer.length >= that.bufferLength) {
+                                that.el_scroll[0].removeChild(that.el_scroll[0].firstChild);
+                                that.scroll_buffer.splice(0, scrollBlock);
+                            }
+                        }
+                    }
+                    
+                    // activate / deactivate scroll content on buffer changes
+                    if (oldBuffer != that.terminal.buffer) {
+                        if (that.terminal.buffer == that.terminal.normal_buffer)
+                            that.el_scroll.css('display', 'inline');
+                        else
+                            that.el_scroll.css('display', 'none');
+                    }
+                    
+                    // terminal output
+                    that.el_buffer = replaceHtml(that.el_buffer, that.toString());
+                    // title
                     that.setTitle.call(that.el, that.terminal.title);
+                    // scroll down
+                    that.container[0].scrollTop = that.container[0].scrollHeight;
                 }
                 $.post('/read/' + that.id, '', that.read(that));
             }
@@ -237,15 +357,16 @@
         this.init();
     }
 
-
+    // install global keyhandler
+    if (window['_browserterminal_keyhandler'] == undefined)
+        window['_browserterminal_keyhandler'] = new KeyHandler();
 
     $.fn.browserterminal = function(options) {
         var settings = $.extend({
-            command: ['/bin/bash'],
             size: [80, 25],
-            input_polling: 50,
-            buffer_length: 200,
-            resizable: false
+            bufferLength: 5000,
+            resizable: false,
+            input_polling: 50
         }, options);
 
         return this.each(function() {
@@ -258,20 +379,7 @@
 }(jQuery));
 
 
-var entityMap = {
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': '&quot;',
-    "'": '&#39;',
-    "/": '/'
-};
 
-function escapeHtml(string) {
-    return String(string).replace(/[&<>"'\/]/g, function (s) {
-        return entityMap[s];
-    });
-}
 
 function JSFrontend(terminal) {
     this.terminal = terminal;

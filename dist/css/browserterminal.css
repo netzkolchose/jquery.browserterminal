@@ -16,13 +16,12 @@
 
 
 ._tw {
-    height: 100%;
-    width: 100%;
     overflow-x: auto;
     overflow-y: scroll;
     margin: 0;
     padding: 0;
     white-space: pre;
+    text-align: center;
 }
 
 .italic {font-style: italic}
