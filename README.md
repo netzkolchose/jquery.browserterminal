@@ -4,11 +4,17 @@ A jquery based browser terminal using node-ansiparser and node-ansiterminal.
 
 ### INSTALL
 
-Run `npm install` in package directory.
+Run `npm install -production` in package directory for browser related stuff.
 
 ### DEMO
 
-Run `npm start` and point your browser to http://localhost:8000
+* With pty.js:
+
+Run `npm install && npm start` and point your browser to http://localhost:8000
+
+* With Python:
+
+Run `python server.py` and point your browser to http://localhost:8000
 
 ### TODO
 * resize

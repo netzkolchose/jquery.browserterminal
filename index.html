@@ -6,7 +6,7 @@
     <title>Terminal-Testpage</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="dist/css/browserterminal.css">
+    <link rel="stylesheet" href="/dist/css/browserterminal.css">
     <!--<link rel="stylesheet" href="dist/css/black_on_white.css">-->
     <script type="text/javascript" src="/node_modules/jquery/dist/jquery.min.js"></script>
     <script type="text/javascript" src="/node_modules/jquery.browser/dist/jquery.browser.min.js"></script>
@@ -41,7 +41,12 @@
 </div>
 <script type="text/javascript">
     $(function() {
-        $('.terminal').browserterminal({setTitle: function(s){$(this).siblings('.title').text(s);}});
+        $('.terminal').browserterminal({
+            setTitle: function(s){
+                $(this).siblings('.title').text(s);
+            }
+            // TODO: callback customization
+        });
     });
 </script>
 </body>

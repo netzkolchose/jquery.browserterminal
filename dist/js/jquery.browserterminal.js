@@ -157,7 +157,8 @@
         this.parser = new AnsiParser(this.terminal);
         this.chars = '';
         this.scroll_buffer = [];
-        this.bufferLength = (options.bufferLength>500) ? options.bufferLength : 500;
+        this.bufferLength = options.bufferLength;
+        this.inputPolling = options.inputPolling;
         
         // beep
         this.beepElement = new Audio('/audio/beep.mp3');
@@ -291,7 +292,7 @@
         this.connect = function(that) {
             return function(s) {
                 that.id = s;
-                setInterval(that.check_input(that), 20);
+                setInterval(that.check_input(that), that.inputPolling);
                 $.post('/read/' + that.id, '', that.read(that));
             }
         };
@@ -306,41 +307,52 @@
         this.read = function(that) {
             // FIXME: get rid of the recursion!!!
             return function(s) {
+                var old_string = '';
                 if (s) {
                     // save old scroll offset and buffer
                     var scrollLength = that.scroll_buffer.length;
                     var oldBuffer = that.terminal.buffer;
                     
-                    that.write(s);
+                    // try to keep responsive on fast big data
+                    if (s.length > 1000000)
+                        old_string = s.slice(1000000);
+                    that.write(s.slice(0, 1000000));
                     
-                    // scroll handling and output
-                    var scrollBlock = 100;  // put n lines into one scroll block
-                    if (that.terminal.buffer == that.terminal.normal_buffer) {
-                        if (scrollLength<that.scroll_buffer.length) {
-                            var start = Math.floor(scrollLength/scrollBlock);
-                            var end = Math.floor(that.scroll_buffer.length/scrollBlock);
-                            that.el_sc = replaceHtml(that.el_sc,
-                                that.scroll_buffer.slice(start * scrollBlock, start * scrollBlock + scrollBlock).join(''));
-                            for (var i = start+1; i <= end; ++i) {
-                                that.el_sc = $('<span>', {class: '_sc'})[0];
-                                that.el_scroll.append(that.el_sc);
+                    // scroll handling and output - FIXME: make it responsive for big data
+                    if (that.bufferLength) {
+                        var scrollBlock = 1000;  // put n lines into one scroll block
+                        if (that.terminal.buffer == that.terminal.normal_buffer) {
+                            if (scrollLength < that.scroll_buffer.length) {
+                                var start = Math.floor(scrollLength / scrollBlock);
+                                var end = Math.floor(that.scroll_buffer.length / scrollBlock);
                                 that.el_sc = replaceHtml(that.el_sc,
-                                    that.scroll_buffer.slice(i * scrollBlock, i * scrollBlock + scrollBlock).join(''));
-                            }
-                            // truncate buffer
-                            while (that.scroll_buffer.length >= that.bufferLength) {
-                                that.el_scroll[0].removeChild(that.el_scroll[0].firstChild);
-                                that.scroll_buffer.splice(0, scrollBlock);
+                                    that.scroll_buffer.slice(start * scrollBlock, start * scrollBlock + scrollBlock).join(''));
+                                for (var i = start + 1; i <= end; ++i) {
+                                    if ((end-i) > (that.bufferLength/scrollBlock)) {
+                                        i -= 1;
+                                        end -= 1;
+                                        that.scroll_buffer.splice(0, scrollBlock);
+                                        continue;
+                                    }
+                                    that.el_sc = document.createElement('span');
+                                    that.el_sc.innerHTML = that.scroll_buffer.slice(i * scrollBlock, i * scrollBlock + scrollBlock).join('');
+                                    that.el_scroll.append(that.el_sc);
+                                }
+                                // truncate buffer
+                                while (that.scroll_buffer.length >= that.bufferLength) {
+                                    that.el_scroll[0].removeChild(that.el_scroll[0].firstChild);
+                                    that.scroll_buffer.splice(0, scrollBlock);
+                                }
                             }
                         }
-                    }
-                    
-                    // activate / deactivate scroll content on buffer changes
-                    if (oldBuffer != that.terminal.buffer) {
-                        if (that.terminal.buffer == that.terminal.normal_buffer)
-                            that.el_scroll.css('display', 'inline');
-                        else
-                            that.el_scroll.css('display', 'none');
+
+                        // activate / deactivate scroll content on buffer changes
+                        if (oldBuffer != that.terminal.buffer) {
+                            if (that.terminal.buffer == that.terminal.normal_buffer)
+                                that.el_scroll.css('display', 'inline');
+                            else
+                                that.el_scroll.css('display', 'none');
+                        }
                     }
                     
                     // terminal output
@@ -350,7 +362,10 @@
                     // scroll down
                     that.container[0].scrollTop = that.container[0].scrollHeight;
                 }
-                $.post('/read/' + that.id, '', that.read(that));
+                if (old_string)
+                    setTimeout(function(){that.read(that)(old_string);}, 10);
+                else
+                    $.post('/read/' + that.id, '', that.read(that));
             }
         };
         
@@ -364,9 +379,12 @@
     $.fn.browserterminal = function(options) {
         var settings = $.extend({
             size: [80, 25],
-            bufferLength: 5000,
-            resizable: false,
-            input_polling: 50
+            bufferLength: 10000,
+            inputPolling: 20,
+            resize: function(size, cb) {},
+            readPipe: function(cb) {},
+            writePipe: function(s) {},
+            resizable: false
         }, options);
 
         return this.each(function() {
