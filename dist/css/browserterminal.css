@@ -13,6 +13,7 @@
 .fg0 {color: #000}
 .bg0 {background-color: #000}
 
+.caret-hide {color:#000; line-height: 0}
 
 
 ._tw {
@@ -21,7 +22,9 @@
     margin: 0;
     padding: 0;
     white-space: pre;
-    text-align: center;
+    word-break: normal;
+    word-wrap: normal;
+    outline: 0;
 }
 
 .italic {font-style: italic}

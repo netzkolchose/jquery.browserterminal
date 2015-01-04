@@ -9,7 +9,7 @@
             return function(e) {
                 // dont handle any other elements than terminals
                 var term = $(document.activeElement).data('terminal');
-                if (! term instanceof BrowserTerminal)
+                if (!(term instanceof BrowserTerminal))
                     return;
 
 //            term.widget.scrollTop(term.widget.prop('scrollHeight') - term.widget.innerHeight());
@@ -95,8 +95,8 @@
         this.handle_paste = function(e) {
             // dont handle any other elements than terminals
             var term = $(document.activeElement).data('terminal');
-            if (! term instanceof BrowserTerminal)
-                return;
+            //if (!(term instanceof BrowserTerminal))
+            //    return;
             if (e.clipboardData) {
                 term.chars += e.clipboardData.getData('text/plain');
             } else if (window.clipboardData) {  // IE
@@ -148,17 +148,39 @@
         this.that = this;
         this.el = $(el);
         this.el = $(el);
-        this.el.html('<pre class="_tw" contenteditable="true" spellcheck="false"><span class="scrollbuffer"><span class="_sc"></span></span><span class="buffer"></span></pre>');
+        this.el.html('<pre class="_tw" contenteditable="true" spellcheck="false"><span class="caret-hide">&#8203;</span><span class="scrollbuffer"><span class="_sc"></span></span><span class="buffer"></span></pre>');
         this.container = this.el.children('pre._tw');
         this.el_scroll = this.container.children('.scrollbuffer');
         this.el_sc = this.container.find('._sc')[0];
         this.el_buffer = this.container.children('.buffer')[0];
+        this.caret_hide = this.container.children('.caret-hide')[0];
         this.terminal = new AnsiTerminal(options.size[0], options.size[1]);
         this.parser = new AnsiParser(this.terminal);
         this.chars = '';
         this.scroll_buffer = [];
         this.bufferLength = options.bufferLength;
         this.inputPolling = options.inputPolling;
+        
+        // set pre size from col x row
+        var el_height = $('<span>');
+        // bug in chrome? we need to disable scrollbar temporarily
+        var scroll = this.container.css('overflow-y');
+        this.container.css('overflow-y', 'hidden');
+        // fill with M
+        var filler = new Array(options.size[1]+1).join( (new Array(options.size[0]+1).join('M'))+'\n');
+        el_height.html(filler.slice(0,-1));
+        this.container.append(el_height);
+        this.container.height(this.container.outerHeight()+'px');
+        this.container.css('overflow-y', scroll);
+        el_height.remove();
+        
+        // hide caret on focus and click
+        this.container.on('focus click', (function(that) {
+            return function(ev){
+                window.getSelection().collapse(that.caret_hide.firstChild, 0);
+                ev.preventDefault();
+            }
+        })(this));
         
         // beep
         this.beepElement = new Audio('/audio/beep.mp3');

@@ -14,9 +14,6 @@
     <script type="text/javascript" src="/node_modules/node-ansiterminal/dist/ansiterminal.js"></script>
     <script type="text/javascript" src="/dist/js/jquery.browserterminal.js"></script>
     <style>
-        .terminal {
-            width: 650px;
-        }
         .terminal-container {
             float: left;
             margin: 10px;
@@ -27,7 +24,6 @@
             padding: 1px 5px;
             background: #bbb;
         }
-        ._tw {height: 400px}
     </style>
 </head>
 <body>
@@ -43,9 +39,13 @@
     $(function() {
         $('.terminal').browserterminal({
             setTitle: function(s){
-                $(this).siblings('.title').text(s);
+                var term = $(this).data('terminal');
+                var cols = term.terminal.cols;
+                var rows =term.terminal.rows;
+                $(this).siblings('.title').text(cols + 'x' + rows + ' ' + s);
             }
             // TODO: callback customization
+            // TODO: resize policy
         });
     });
 </script>
