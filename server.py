@@ -39,12 +39,11 @@ class Terminal(object):
         codecs.register_error('_td_' + hex(id(self)), lambda _: u'')
 
     def receive(self):
-        if select([self.master], [], [], 0.1)[0]:
-            self.read_buffer = self.error_buffer + os.read(self.master, 4096)
-            print len(self.read_buffer)
-            self.error_buffer = ''
-            return self.read_buffer.decode('utf8', self._decode_handler_id)
-        return u''
+        self.read_buffer = self.error_buffer
+        self.error_buffer = ''
+        while select([self.master], [], [], 0.001)[0] and len(self.read_buffer) < 1048576:
+            self.read_buffer += os.read(self.master, 4096)
+        return self.read_buffer.decode('utf8', self._decode_handler_id)
 
     def send(self, s):
         os.write(self.master, s)

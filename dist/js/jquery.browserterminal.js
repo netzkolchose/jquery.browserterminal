@@ -3,6 +3,25 @@
  *
  */
 (function($) {
+    'use strict';
+
+    var nonChar = false;
+
+    var functionkeys = {
+        1   : '\u001bOP',
+        2   : '\u001bOQ',
+        3   : '\u001bOR',
+        4   : '\u001bOS',
+        5   : '\u001b[15~',
+        6   : '\u001b[17~',
+        7   : '\u001b[18~',
+        8   : '\u001b[19~',
+        9   : '\u001b[20~',
+        10  : '\u001b[21~',
+        11  : '\u001b[23~',
+        12  : '\u001b[24~'
+    };
+    
     function KeyHandler() {
 
         this.handle_keys = function(that) {
@@ -112,46 +131,18 @@
         document.onpaste = this.handle_paste;
     }
     
-    // html escape
-    var entityMap = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#39;',
-        '/': '&#47;'
-    };
-
-    function escapeHtml(string) {
-        return String(string).replace(/[&<>"'\/]/g, function (s) {
-            return entityMap[s];
-        });
-    }
-
-    // fast innerHTML replacement
-    function replaceHtml(el, html) {
-        //var oldEl = typeof el === "string" ? document.getElementById(el) : el;
-        var oldEl = el;
-        /*@cc_on // Pure innerHTML is slightly faster in IE
-         oldEl.innerHTML = html;
-         return oldEl;
-         @*/
-        var newEl = oldEl.cloneNode(false);
-        newEl.innerHTML = html;
-        oldEl.parentNode.replaceChild(newEl, oldEl);
-        /* Since we just removed the old element from the DOM, return a reference
-         to the new element, which can be used to restore variable references. */
-        return newEl;
+    function appendClone(node) {
+        return function(el) {
+            node.appendChild(el.cloneNode(true));
+        }
     }
     
     function BrowserTerminal(el, options) {
         this.that = this;
         this.el = $(el);
-        this.el = $(el);
-        this.el.html('<pre class="_tw" contenteditable="true" spellcheck="false"><span class="caret-hide">&#8203;</span><span class="scrollbuffer"><span class="_sc"></span></span><span class="buffer"></span></pre>');
+        this.el.html('<pre class="_tw" contenteditable="true" spellcheck="false"><span class="caret-hide">&#8203;</span><span class="scrollbuffer"></span><span class="buffer"></span></pre>');
         this.container = this.el.children('pre._tw');
-        this.el_scroll = this.container.children('.scrollbuffer');
-        this.el_sc = this.container.find('._sc')[0];
+        this.el_scroll = this.container.children('.scrollbuffer')[0];
         this.el_buffer = this.container.children('.buffer')[0];
         this.caret_hide = this.container.children('.caret-hide')[0];
         this.terminal = new AnsiTerminal(options.size[0], options.size[1]);
@@ -160,6 +151,7 @@
         this.scroll_buffer = [];
         this.bufferLength = options.bufferLength;
         this.inputPolling = options.inputPolling;
+        this.scrollBufferChanged = false;
         
         // set pre size from col x row
         var el_height = $('<span>');
@@ -192,15 +184,18 @@
         // callbacks
         this.terminal.appendScrollBuffer = (function(that){
             return function(elems){
-                //that.scroll_buffer.push(elems);
-                that.scroll_buffer.push(that.printScrollBuffer([elems]));
+                if (that.bufferLength) {
+                    that.scrollBufferChanged = true;
+                    that.scroll_buffer.push(that.createPrintFragment([elems]));
+                    while (that.scroll_buffer.length >= that.bufferLength)
+                        that.scroll_buffer.shift();
+                }
             }
         })(this);
         this.terminal.clearScrollBuffer = (function(that){
             return function(){
-                that.scroll_buffer=[];
-                that.el_scroll[0].innerHTML = '<span class="_sc"></span>';
-                that.el_sc = that.container.find('._sc')[0];
+                that.scroll_buffer = [];
+                that.el_scroll.innerHTML = '';
             }
         })(this);
         this.terminal.send = (function(that) {
@@ -252,60 +247,53 @@
             }
             return code;
         };
-
-        this.toString = function() {
-            var s = '',
-                old_attr = null,
-                attr = null;
-            for (var i=0; i<this.terminal.buffer.length; ++i) {
-                for (var j=0; j<this.terminal.buffer[i].length; ++j) {
-                    attr = this.terminal.buffer[i][j].attributes;
-                    if (old_attr !== attr) {
-                        if (old_attr)
-                            s += '</span>';
-                        if (attr) {
-                            if (attr[3])
-                                s += '<span class="' + attr.join('').trim() + '" data-contents="' + (this.terminal.buffer[i][j].c  || '\xa0') + '">';
-                            else
-                                s += '<span class="' + attr.join('').trim() + '">';
-                        }
-                        old_attr = attr;
-                    }
-                    s += escapeHtml(this.terminal.buffer[i][j].c || '\xa0');
-                }
-                if (old_attr) {
-                    s += '</span>';
-                    old_attr = null;
-                }
-                s += '\n';
-            }
-            return s;
-        };
         
-        this.printScrollBuffer = function(buffer) {
-            var s = '',
+        this.createPrintFragment = function(buffer) {
+            var frag = document.createDocumentFragment(),
+                span = null,
+                clas = null,
+                s = '',
                 old_attr = null,
                 attr = null;
             for (var i=0; i<buffer.length; ++i) {
                 for (var j=0; j<buffer[i].length; ++j) {
                     attr = buffer[i][j].attributes;
                     if (old_attr !== attr) {
-                        if (old_attr)
-                            s += '</span>';
+                        if (old_attr) {
+                            span.textContent = s;
+                            frag.appendChild(span);
+                            s = '';
+                        }
                         if (attr) {
-                                s += '<span class="' + attr.join('').trim() + '">';
+                            if (s) {
+                                frag.appendChild(document.createTextNode(s));
+                                s = '';
+                            }
+                            span = document.createElement('span');
+                            clas = document.createAttribute('class');
+                            clas.value = attr.join('');
+                            span.setAttributeNode(clas);
+                            if (attr[3]) {
+                                var data_contents = document.createAttribute('data-contents');
+                                data_contents.value = buffer[i][j].c || '\xa0';
+                                span.setAttributeNode(data_contents);
+                            }
                         }
                         old_attr = attr;
                     }
-                    s += escapeHtml(buffer[i][j].c || '\xa0');
+                    s += buffer[i][j].c || '\xa0';
                 }
                 if (old_attr) {
-                    s += '</span>';
                     old_attr = null;
+                    span.textContent = s;
+                    frag.appendChild(span);
+                    frag.appendChild(document.createTextNode('\n'));
+                } else {
+                    frag.appendChild(document.createTextNode(s + '\n'));
                 }
-                s += '\n';
+                s = '';
             }
-            return s;
+            return frag;
         };
 
         this.init = function() {
@@ -331,59 +319,46 @@
             return function(s) {
                 var old_string = '';
                 if (s) {
-                    // save old scroll offset and buffer
-                    var scrollLength = that.scroll_buffer.length;
+
                     var oldBuffer = that.terminal.buffer;
                     
                     // try to keep responsive on fast big data
-                    if (s.length > 1000000)
-                        old_string = s.slice(1000000);
-                    that.write(s.slice(0, 1000000));
-                    
-                    // scroll handling and output - FIXME: make it responsive for big data
-                    if (that.bufferLength) {
-                        var scrollBlock = 1000;  // put n lines into one scroll block
+                    if (s.length > 32000)
+                        old_string = s.slice(32000);
+                    that.write(s.slice(0, 32000));
+
+                    // scroll area
+                    if (that.bufferLength && !old_string) {
                         if (that.terminal.buffer == that.terminal.normal_buffer) {
-                            if (scrollLength < that.scroll_buffer.length) {
-                                var start = Math.floor(scrollLength / scrollBlock);
-                                var end = Math.floor(that.scroll_buffer.length / scrollBlock);
-                                that.el_sc = replaceHtml(that.el_sc,
-                                    that.scroll_buffer.slice(start * scrollBlock, start * scrollBlock + scrollBlock).join(''));
-                                for (var i = start + 1; i <= end; ++i) {
-                                    if ((end-i) > (that.bufferLength/scrollBlock)) {
-                                        i -= 1;
-                                        end -= 1;
-                                        that.scroll_buffer.splice(0, scrollBlock);
-                                        continue;
-                                    }
-                                    that.el_sc = document.createElement('span');
-                                    that.el_sc.innerHTML = that.scroll_buffer.slice(i * scrollBlock, i * scrollBlock + scrollBlock).join('');
-                                    that.el_scroll.append(that.el_sc);
-                                }
-                                // truncate buffer
-                                while (that.scroll_buffer.length >= that.bufferLength) {
-                                    that.el_scroll[0].removeChild(that.el_scroll[0].firstChild);
-                                    that.scroll_buffer.splice(0, scrollBlock);
-                                }
+                            if (that.scrollBufferChanged) {
+                                var new_el = that.el_scroll.cloneNode(false);
+                                that.scroll_buffer.map(appendClone(new_el));
+                                that.el_scroll.parentNode.replaceChild(new_el, that.el_scroll);
+                                that.el_scroll = new_el;
+                                that.scrollBufferChanged = false;
                             }
                         }
-
-                        // activate / deactivate scroll content on buffer changes
+                        // activate / deactivate scroll area on buffer changes
                         if (oldBuffer != that.terminal.buffer) {
                             if (that.terminal.buffer == that.terminal.normal_buffer)
-                                that.el_scroll.css('display', 'inline');
+                                that.el_scroll.style.display = 'inline';
                             else
-                                that.el_scroll.css('display', 'none');
+                                that.el_scroll.style.display = 'none';
                         }
                     }
-                    
                     // terminal output
-                    that.el_buffer = replaceHtml(that.el_buffer, that.toString());
+                    var new_buf = that.el_buffer.cloneNode(false);
+                    new_buf.appendChild(that.createPrintFragment(that.terminal.buffer));
+                    that.el_buffer.parentNode.replaceChild(new_buf, that.el_buffer);
+                    that.el_buffer = new_buf;
+
                     // title
                     that.setTitle.call(that.el, that.terminal.title);
                     // scroll down
                     that.container[0].scrollTop = that.container[0].scrollHeight;
                 }
+                
+                // continuation
                 if (old_string)
                     setTimeout(function(){that.read(that)(old_string);}, 10);
                 else
@@ -401,7 +376,7 @@
     $.fn.browserterminal = function(options) {
         var settings = $.extend({
             size: [80, 25],
-            bufferLength: 10000,
+            bufferLength: 5000,
             inputPolling: 20,
             resize: function(size, cb) {},
             readPipe: function(cb) {},
@@ -417,66 +392,3 @@
         });
     };
 }(jQuery));
-
-
-
-
-function JSFrontend(terminal) {
-    this.terminal = terminal;
-    this.id = null;
-    this.container = $('pre');
-    this.that = this;
-    this.chars = '';
-    this.command = '';
-
-    this.check_input = function(that) {
-        return function() {
-            if (that.chars == '')
-                return;
-            that.terminal.write(that.chars);
-            that.command += that.chars;
-            if (that.chars.indexOf('\r') != -1) {
-                that.terminal.write('\r\n');
-                try {
-                    var result = window.eval(that.command);
-                    if (result !== undefined) {
-                        if (result instanceof Node) {
-                            var tmp = document.createElement("div");
-                            tmp.appendChild(result.cloneNode(false));
-                            result = tmp.innerHTML;
-                        }
-                        that.terminal.write('\x1b[36m' + escapeHtml(result) + '\x1b[0m');
-                    }
-                } catch(e) {
-                    that.terminal.write('\x1b[38;5;196m' + e + '\x1b[0m');
-                }
-                that.terminal.write('\r\n>');
-                that.command = '';
-            }
-            that.chars = '';
-            that.container[0].innerHTML = that.terminal.toString();
-        }
-    };
-    setInterval(this.check_input(this), 20);
-    this.terminal.write('\x1b[20h\x1b[32m** Simple 5min Javascript REPL demo :) **\x1b[0m\r\n');
-    this.terminal.write('>');
-    this.container[0].innerHTML = this.terminal.toString();
-}
-
-
-var nonChar = false;
-
-var functionkeys = {
-    1   : '\u001bOP',
-    2   : '\u001bOQ',
-    3   : '\u001bOR',
-    4   : '\u001bOS',
-    5   : '\u001b[15~',
-    6   : '\u001b[17~',
-    7   : '\u001b[18~',
-    8   : '\u001b[19~',
-    9   : '\u001b[20~',
-    10  : '\u001b[21~',
-    11  : '\u001b[23~',
-    12  : '\u001b[24~'
-};
