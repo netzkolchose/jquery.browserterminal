@@ -19,7 +19,6 @@ Run `python server.py` and point your browser to http://localhost:8000
 ### TODO
 * resize
 * make read/write callbacks configurable
-* better keyhandling
 * tests
 * amd/bower support
 * and much more...

@@ -17,11 +17,10 @@
   "dependencies": {
     "node-ansiparser": "latest",
     "node-ansiterminal": "git+https://github.com/netzkolchose/node-ansiterminal.git",
-    "jquery": "latest",
-    "jquery.browser": "latest"
+    "jquery": "latest"
   },
   "devDependencies": {
     "node-uuid": "latest",
-    "pty.js-11": "latest"
+    "pty.js": "latest"
   }
 }
