@@ -11,40 +11,32 @@
     <script type="text/javascript" src="/node_modules/node-ansiparser/dist/ansiparser.js"></script>
     <script type="text/javascript" src="/node_modules/node-ansiterminal/dist/ansiterminal.js"></script>
     <script type="text/javascript" src="/node_modules/jquery/dist/jquery.min.js"></script>
+    <script type="text/javascript" src="/node_modules/javascript-detect-element-resize/jquery.resize.js"></script>
     <script type="text/javascript" src="/dist/js/jquery.browserterminal.js"></script>
     <style>
-        .terminal-container {
-            float: left;
-            margin: 10px;
-            border: 1px solid #000;
+        html, body {
+            height: 100%;
+            width: 100%;
+            padding: 0;
+            margin: 0;
+            background: #000;
         }
-        .title {
-            font-family: monospace;
-            padding: 1px 5px;
-            background: #bbb;
+        .terminal {
+            height: 100%;
         }
     </style>
 </head>
 <body>
-<div class="terminal-container">
-    <div class="title"></div>
-    <div class="terminal"></div>
-</div>
-<!--<div class="terminal-container">
-    <div class="title"></div>
-    <div class="terminal"></div>
-</div>-->
+<div class="terminal"></div>
 <script type="text/javascript">
     $(function() {
         $('.terminal').browserterminal({
+            resizable: true,
             setTitle: function(s){
                 var term = $(this).data('terminal');
-                var cols = term.terminal.cols;
-                var rows =term.terminal.rows;
-                $(this).siblings('.title').text(cols + 'x' + rows + ' ' + s);
+                document.title = '[' + term.terminal.cols + 'x' + term.terminal.rows + '] ' + s;
             }
             // TODO: callback customization
-            // TODO: resize policy
         });
     });
 </script>

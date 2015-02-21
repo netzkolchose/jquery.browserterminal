@@ -17,8 +17,8 @@ Run `npm install && npm start` and point your browser to http://localhost:8000
 Run `python server.py` and point your browser to http://localhost:8000
 
 ### TODO
-* resize
 * make read/write callbacks configurable
 * tests
 * amd/bower support
+* documentation
 * and much more...

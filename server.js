@@ -24,6 +24,9 @@ var getPty = (function() {
             container.pty.on('data', function(data) {
                 container.data += data;
             });
+            container.pty.on('resize', function(data) {
+                console.log('resize event', data);
+            });
             ptys[container.id] = container;
             return container;
         } else
@@ -68,6 +71,21 @@ var server = http.createServer(function (request, response) {
             response.writeHead(404, {'Content-Type': 'text/plain'});
             response.end('404 Not Found\n');
         }
+    } else if (request_path.indexOf('/resize/') == 0) {
+        term = getPty(request_path.split('/')[2]);
+        if (term) {
+            request.on('data', function(data) {
+                var size = JSON.parse(data);
+                term.pty.resize(size[0], size[1]);
+                response.writeHead(200, {'Content-Type': 'application/json'});
+                response.write(JSON.stringify({cols: term.pty.cols, rows: term.pty.rows}));
+                response.end('');
+            });
+        } else {
+            response.writeHead(404, {'Content-Type': 'text/plain'});
+            response.end('404 Not Found\n');
+        }
+        
     } else {
         if (request_path == '/')
             request_path = '/index.html';

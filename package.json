@@ -1,6 +1,6 @@
 {
   "name": "jquery.browserterminal",
-  "version": "0.0.1-alpha",
+  "version": "0.0.2",
   "description": "A jquery based browser terminal.",
   "main": "dist/js/jquery.browserterminal.js",
   "scripts": {
@@ -17,6 +17,7 @@
   "dependencies": {
     "node-ansiparser": "latest",
     "node-ansiterminal": "git+https://github.com/netzkolchose/node-ansiterminal.git",
+    "javascript-detect-element-resize": "git+https://github.com/sdecima/javascript-detect-element-resize.git",
     "jquery": "latest"
   },
   "devDependencies": {

@@ -17,14 +17,18 @@
 
 
 ._tw {
+    display: block;
     overflow-x: auto;
     overflow-y: scroll;
     margin: 0;
+    float: right;
+    vertical-align: middle;
     padding: 0;
     white-space: pre;
     word-break: normal;
     word-wrap: normal;
     outline: 0;
+    direction: ltr;
 }
 
 .italic {font-style: italic}

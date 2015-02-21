@@ -7,6 +7,8 @@
     
     function KeyHandler() {
         // see http://unixpapa.com/js/key.html
+        
+        // C0 control characters
         var CONTROL_CHARS = '@abcdefghijklmnopqrstuvwxyz[\\]^_';
         
         var KEYS = {
@@ -179,26 +181,52 @@
         this.el_scroll = this.container.children('.scrollbuffer')[0];
         this.el_buffer = this.container.children('.buffer')[0];
         this.caret_hide = this.container.children('.caret-hide')[0];
-        this.terminal = new AnsiTerminal(options.size[0], options.size[1]);
+        this.terminal = new AnsiTerminal(options.initialSize[0], options.initialSize[1]);
         this.parser = new AnsiParser(this.terminal);
         this.chars = '';
         this.scroll_buffer = [];
         this.bufferLength = options.bufferLength;
         this.inputPolling = options.inputPolling;
         this.scrollBufferChanged = false;
+        this.resizeLock = false;
+        this.resizable = options.resizable;
         
-        // set pre size from col x row
-        var el_height = $('<span>');
-        // bug in chrome? we need to disable scrollbar temporarily
-        var scroll = this.container.css('overflow-y');
-        this.container.css('overflow-y', 'hidden');
-        // fill with M
-        var filler = new Array(options.size[1]+1).join( (new Array(options.size[0]+1).join('M'))+'\n');
-        el_height.html(filler.slice(0,-1));
-        this.container.append(el_height);
-        this.container.height(this.container.outerHeight()+'px');
-        this.container.css('overflow-y', scroll);
-        el_height.remove();
+        // calculate fitting arrays [cols/rows] --> width/height
+        // FIXME: howto to trigger recalculation upon attr change?
+        this.container.css('float', 'left');
+        var el = $('<span>');
+        this.container.append(el);
+        this.fitWidth = [];
+        var old_width = 0;
+        for (var i=1; i<50; ++i) {
+            el.html(new Array(i*20+1).join('M'));
+            var width = this.container.outerWidth();
+            for (var j=0; j<20; j++) {
+                this.fitWidth.push(Math.ceil((width-old_width)/20*j)+old_width);
+            }
+            old_width = width;
+        }
+        this.fitHeight = [];
+        var old_height = 0;
+        for (i=1; i<30; ++i) {
+            el.html(new Array(i*10+1).join('M\n').slice(0,-1));
+            var height = this.container.outerHeight();
+            for (var j=0; j<10; j++) {
+                this.fitHeight.push(Math.ceil((height-old_height)/10*j)+old_height);
+            }
+            old_height = height;
+        }
+        el.remove();
+        this.container.css('float', '');
+        
+        if (this.resizable) {
+            this.el.resize(function(){
+                $(this).data('terminal').resize();
+            });
+        }
+        if (this.resizable && options.resizableIndicator)
+            this.el.css({resize: 'both', overflow: 'hidden'});
+
         
         // hide caret on focus and click
         this.container.on('focus click', (function(that) {
@@ -337,7 +365,16 @@
         };
         this.connect = function(that) {
             return function(s) {
+                // set the internal id
                 that.id = s;
+                // init viewport size
+                if (that.resizable) {
+                    that.resize();
+                } else {
+                    that.container.width(that.fitWidth[that.terminal.cols]+'px');
+                    that.container.height(that.fitHeight[that.terminal.rows]+'px');
+                }
+                // setup read and write connections
                 setInterval(that.check_input(that), that.inputPolling);
                 $.post('/read/' + that.id, '', that.read(that));
             }
@@ -355,6 +392,12 @@
             return function(s) {
                 var old_string = '';
                 if (s) {
+                    
+                    // dont alter any terminal state while resizing is ongoing
+                    if (that.resizeLock) {
+                        setTimeout(function(){that.read(that)(s);}, 100);
+                        return;
+                    }
 
                     var oldBuffer = that.terminal.buffer;
                     
@@ -409,6 +452,88 @@
             }
         };
         
+        this.resizeTerminal = function(cols, rows) {
+            if ((this.id === undefined) || (cols < 2) || (rows < 2))
+                return;
+            this.resizeLock = true;
+            $.post('/resize/' + this.id,
+                JSON.stringify([cols, rows]),
+                (function(that) {
+                    return function(size) {
+                        var old_cols = that.terminal.cols;
+                        var old_rows = that.terminal.rows;
+                        var new_cols = size.cols || 80;
+                        var new_rows = size.rows || 25;
+                        if (new_cols != old_cols || new_rows != old_rows) {
+                            that.terminal.resize(new_cols, new_rows);
+                            if (new_cols < old_cols) {
+                                // shrink scrollbuffer
+                                for (var i=0; i < that.scroll_buffer.length; ++i) {
+                                    that.scroll_buffer[i][0][0] = that.scroll_buffer[i][0][0].slice(0, new_cols);
+                                    that.scroll_buffer[i][1] = null;
+                                }
+                                that.scrollBufferChanged = true;
+                            }
+                            // adjust container height and width
+                            that.container.width(that.fitWidth[new_cols]+'px');
+                            that.container.height(that.fitHeight[new_rows]+'px');
+                            
+                            // redraw content - FIXME: ugly code, merge with read
+                            // scroll area
+                            if (that.bufferLength) {
+                                if (that.terminal.buffer == that.terminal.normal_buffer) {
+                                    if (that.scrollBufferChanged) {
+                                        var new_el = that.el_scroll.cloneNode(false);
+                                        for (var i=0; i<that.scroll_buffer.length; ++i) {
+                                            new_el.appendChild(
+                                                (that.scroll_buffer[i][1] ||
+                                                    (that.scroll_buffer[i][1]=that.createPrintFragment(that.scroll_buffer[i][0]))
+                                                ).cloneNode(true));
+                                        }
+                                        that.el_scroll.parentNode.replaceChild(new_el, that.el_scroll);
+                                        that.el_scroll = new_el;
+                                        that.scrollBufferChanged = false;
+                                    }
+                                }
+                            }
+                            // terminal output
+                            var new_buf = that.el_buffer.cloneNode(false);
+                            new_buf.appendChild(that.createPrintFragment(that.terminal.buffer));
+                            that.el_buffer.parentNode.replaceChild(new_buf, that.el_buffer);
+                            that.el_buffer = new_buf;
+
+                            // title
+                            that.setTitle.call(that.el, that.terminal.title);
+                            // scroll down - lazy to avoid early reflow
+                            setTimeout(function() {
+                                that.container[0].scrollTop = that.container[0].scrollHeight;
+                            }, 0);
+                        }
+                        that.resizeLock = false;
+                    }
+                })(this));
+        };
+        this.resize = function(width, height) {
+            var cols = 0;
+            var rows = 0;
+            var i;
+            width = width || this.el.outerWidth();
+            height = height || this.el.outerHeight();
+            for (i=0; i < this.fitWidth.length; ++i) {
+                if (this.fitWidth[i] > width) {
+                    cols = i-1;
+                    break;
+                }
+            }
+            for (i=0; i < this.fitHeight.length; ++i) {
+                if (this.fitHeight[i] > height) {
+                    rows = i-1;
+                    break;
+                }
+            }
+            this.resizeTerminal(cols, rows);
+        };
+
         this.init();
     }
 
@@ -418,13 +543,11 @@
 
     $.fn.browserterminal = function(options) {
         var settings = $.extend({
-            size: [80, 25],
-            bufferLength: 5000,
+            initialSize: [80, 25],
+            bufferLength: 1000,
             inputPolling: 20,
-            resize: function(size, cb) {},
-            readPipe: function(cb) {},
-            writePipe: function(s) {},
-            resizable: false
+            resizable: false,
+            resizableIndicator: false
         }, options);
 
         return this.each(function() {

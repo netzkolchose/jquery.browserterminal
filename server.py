@@ -2,20 +2,26 @@ from bottle import route, post, static_file, request, response
 import os
 from select import select
 from pty import fork
-from termios import TIOCSWINSZ
-from struct import pack
+from termios import TIOCSWINSZ, TIOCGWINSZ
+from struct import pack, unpack
 from fcntl import ioctl
 from os import execl, closerange
 from time import sleep, time
 from uuid import uuid4
 import codecs
+from json import loads, dumps
 
 # A quick and dirty server backend for development.
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+
 def set_termsize(fd, row, col):
     ioctl(fd, TIOCSWINSZ, pack('HHHH', row, col, 0, 0))
+
+
+def get_termsize(fd):
+    return unpack('hh', ioctl(fd, TIOCGWINSZ, '1234'))
 
 
 class Terminal(object):
@@ -119,9 +125,13 @@ def _write(uid):
     return ''
 
 
-@post('/alter/<uid>')
-def alter(uid):
-    return 'Alter: not implemented'
+@post('/resize/<uid>')
+def resize(uid):
+    rows, cols = loads(request.body.read())
+    term = terminals.get(uid)
+    set_termsize(term.master, cols, rows)
+    rows, cols = get_termsize(term.master)
+    return {'cols': cols, 'rows': rows}
 
 
 from bottle import ServerAdapter, run
