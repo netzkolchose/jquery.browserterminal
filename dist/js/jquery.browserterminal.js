@@ -190,29 +190,32 @@
         this.scrollBufferChanged = false;
         this.resizeLock = false;
         this.resizable = options.resizable;
-        
+
         // calculate fitting arrays [cols/rows] --> width/height
+        // magic 1 for width is needed to avoid a useless horizontal scroll bar
         // FIXME: howto to trigger recalculation upon attr change?
         this.container.css('float', 'left');
         var el = $('<span>');
         this.container.append(el);
         this.fitWidth = [];
         var old_width = 0;
-        for (var i=1; i<50; ++i) {
-            el.html(new Array(i*20+1).join('M'));
+        for (var i = 1; i < 50; ++i) {
+            el.html(new Array(i * 20 + 1).join('M'));
             var width = this.container.outerWidth();
-            for (var j=0; j<20; j++) {
-                this.fitWidth.push(Math.ceil((width-old_width)/20*j)+old_width);
+            for (var j = 0; j < 20; j++) {
+                this.fitWidth.push(Math.ceil((width - old_width) / 20 * j) + old_width + 1); // magic 1
             }
             old_width = width;
         }
         this.fitHeight = [];
         var old_height = 0;
-        for (i=1; i<30; ++i) {
-            el.html(new Array(i*10+1).join('M\n').slice(0,-1));
+        // magic 1
+        this.container.width(this.container.outerWidth() + 1);
+        for (i = 1; i < 30; ++i) {
+            el.html(new Array(i * 10 + 1).join('M\n').slice(0, -1));
             var height = this.container.outerHeight();
-            for (var j=0; j<10; j++) {
-                this.fitHeight.push(Math.ceil((height-old_height)/10*j)+old_height);
+            for (var j = 0; j < 10; j++) {
+                this.fitHeight.push(Math.ceil((height - old_height) / 10 * j) + old_height);
             }
             old_height = height;
         }

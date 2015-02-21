@@ -17,6 +17,8 @@ Run `npm install && npm start` and point your browser to http://localhost:8000
 Run `python server.py` and point your browser to http://localhost:8000
 
 ### TODO
+* Mutation Observer for style attributes / automatic rescaling
+* mouse support
 * make read/write callbacks configurable
 * tests
 * amd/bower support
