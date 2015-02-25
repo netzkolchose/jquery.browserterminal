@@ -172,6 +172,55 @@
         document.onkeypress = this.handle_keys;
         document.onpaste = this.handle_paste;
     }
+
+    var BITS = {
+        1: 'bold',
+        2: 'italic',
+        4: 'underline',
+        8: 'blink',
+        16: 'inverse',
+        32: 'conceal',
+        64: 'c'
+    };
+
+    var MAP = function() {
+        var m = [];
+        for (var i=0; i<128; ++i) {
+            var entry = [];
+            for (var j in BITS) {
+                if (i & j)
+                    entry.push(BITS[j]);
+            }
+            m.push(entry.join(' '));
+        }
+        return m;
+    }();
+    
+    // FIXME: cleanup this ugly mess
+    function getStyles(num, gb) {
+        var fg_rgb = num&67108864 && num&134217728;
+        var bg_rgb = num&16777216 && num&33554432;
+        // if (not RGB) and (fg set) and (bold set) and (fg < 8)
+        var intense_on_bold = (!fg_rgb && num&67108864 && num&65536 && (num>>>8&255) < 8) ? 1 : 0;
+        var inverse = num&1048576;
+        var styles = [
+            MAP[num>>>16 & 127]
+            + ((num&67108864 && !fg_rgb) ? ((inverse)?' bg':' fg')+((intense_on_bold)?(num>>>8&255)|8:num>>>8&255) : '')
+            + ((num&16777216 && !bg_rgb) ? ((inverse)?' fg':' bg')+(num&255) : '')
+        ];
+        // post check for default colors on inverse
+        if (inverse && !(num&67108864))
+            styles[0] += ' bg-1';
+        if (inverse && !(num&16777216))
+            styles[0] += ' fg-1';
+        var s = '';
+        if (fg_rgb)
+            s += ((inverse)?'background-color:rgb(':'color:rgb(') + [num>>>8&255, gb>>>24, gb>>>8&255].join(',') + ');';
+        if (bg_rgb)
+            s += ((inverse)?'color:rgb(':'background-color:rgb(') + [num&255, gb>>>16&255, gb&255].join(',') + ');';
+        styles.push(s);
+        return styles;
+    }
     
     function BrowserTerminal(el, options) {
         this.that = this;
@@ -276,29 +325,16 @@
         this.setTitle = options.setTitle || function() {};
 
         this.write = function(s) {
-            var buffer = this.terminal.buffer,
-                row = this.terminal.cursor.row,
-                col = this.terminal.cursor.col;
             // remove cursor from buffer
-            if (this.terminal.show_cursor)
-                if (buffer[row][col]) {
-                    if (buffer[row][col][1])
-                        buffer[row][col][1][3] = null;
-                }
+            var tchar = this.terminal.buffer[this.terminal.cursor.row][this.terminal.cursor.col];
+            if (this.terminal.show_cursor && tchar)
+                        tchar.attr &= ~4194304;
             // apply all changes to terminal
             this.parser.parse(s);
             // set new cursor to buffer
-            buffer = this.terminal.buffer;
-            row = this.terminal.cursor.row;
-            col = this.terminal.cursor.col;
-            if (this.terminal.show_cursor)
-                if (buffer[row][col]) {
-                    if (!buffer[row][col][1])
-                        buffer[row][col][1] = [null, null, null, null, null, null, null, null];
-                    else
-                        buffer[row][col][1] = buffer[row][col][1].slice();
-                    buffer[row][col][1][3] = (this.terminal.blinking_cursor) ? ' blc c' : ' c';
-                }
+            tchar = this.terminal.buffer[this.terminal.cursor.row][this.terminal.cursor.col];
+            if (this.terminal.show_cursor && tchar)
+                    tchar.attr |= 4194304;
         };
 
         this.ckm = function(s) {
@@ -315,43 +351,63 @@
             return code;
         };
         
+        // FIXME: simplify attr/gb checks
         this.createPrintFragment = function(buffer) {
             var frag = document.createDocumentFragment(),
                 span = null,
                 clas = null,
                 s = '',
-                old_attr = null,
-                attr = null;
+                old_attr = 0,
+                attr = 0,
+                old_gb = 0,
+                gb = 0,
+                styles;
             for (var i=0; i<buffer.length; ++i) {
                 for (var j=0; j<buffer[i].length; ++j) {
-                    attr = buffer[i][j][1];
-                    if (old_attr !== attr) {
-                        if (old_attr) {
+                    attr = buffer[i][j].attr;
+                    gb = buffer[i][j].gb;
+                    if ((old_attr !== attr) || (old_gb !== gb)) {
+                        if (old_attr || old_gb) {
                             span.textContent = s;
                             frag.appendChild(span);
                             s = '';
                         }
-                        if (attr) {
+                        if (attr || gb) {
                             if (s) {
                                 frag.appendChild(document.createTextNode(s));
                                 s = '';
                             }
                             span = document.createElement('span');
-                            clas = document.createAttribute('class');
-                            clas.value = attr.join('');
-                            span.setAttributeNode(clas);
-                            if (attr[3]) {
+                            styles = getStyles(attr, gb);
+                            // classes
+                            if (styles[0]) {
+                                clas = document.createAttribute('class');
+                                clas.value = styles[0];
+                                span.setAttributeNode(clas);
+                            }
+                            // style
+                            if (styles[1]) {
+                                var style = document.createAttribute('style');
+                                style.value = styles[1];
+                                span.setAttributeNode(style);
+                            }
+                            // cursor
+                            if (attr & 4194304) {
                                 var data_contents = document.createAttribute('data-contents');
-                                data_contents.value = buffer[i][j][0] || '\xa0';
+                                data_contents.value = buffer[i][j].c || '\xa0';
                                 span.setAttributeNode(data_contents);
+                                if (this.terminal.blinking_cursor)
+                                    clas.value += ' blc';
                             }
                         }
                         old_attr = attr;
+                        old_gb = gb;
                     }
-                    s += buffer[i][j][0] || '\xa0';
+                    s += buffer[i][j].c || '\xa0';
                 }
-                if (old_attr) {
-                    old_attr = null;
+                if (old_attr || old_gb) {
+                    old_attr = 0;
+                    old_gb = 0;
                     span.textContent = s;
                     frag.appendChild(span);
                     frag.appendChild(document.createTextNode('\n'));

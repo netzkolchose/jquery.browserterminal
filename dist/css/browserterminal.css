@@ -31,9 +31,10 @@
     direction: ltr;
 }
 
+.bold {font-weight: bold}
 .italic {font-style: italic}
 .underline {text-decoration: underline}
-
+.conceal {visibility: hidden}
 .blink {
     animation: blink 1s steps(1, start) infinite;
     -webkit-animation: blink 1s steps(1, start) infinite;
@@ -84,25 +85,38 @@
     }
 }
 
-.c1  {font-weight: bold}
-.c22 {font-weight: normal}
 .fg0 {color: #000000}
-.fg1 {color: #bb0000}
+.fg1 {color: #cd0000}
 .fg2 {color: #00cd00}
 .fg3 {color: #cdcd00}
 .fg4 {color: #0000ee}
 .fg5 {color: #cd00cd}
 .fg6 {color: #00cdcd}
-.fg7 {color: #ffffff}
+.fg7 {color: #e5e5e5}
 .bg0 {background-color: #000000}
-.bg1 {background-color: #bb0000}
+.bg1 {background-color: #cd0000}
 .bg2 {background-color: #00cd00}
 .bg3 {background-color: #cdcd00}
 .bg4 {background-color: #0000ee}
 .bg5 {background-color: #cd00cd}
 .bg6 {background-color: #00cdcd}
-.bg7 {background-color: #eeeeee}
-
+.bg7 {background-color: #e5e5e5}
+.fg8 {color: #7f7f7f}
+.fg9 {color: #ff0000}
+.fg10 {color: #00ff00}
+.fg11 {color: #ffff00}
+.fg12 {color: #5c5cff}
+.fg13 {color: #ff00ff}
+.fg14 {color: #00ffff}
+.fg15 {color: #ffffff}
+.bg8 {background-color: #7f7f7f}
+.bg9 {background-color: #ff0000}
+.bg10 {background-color: #00ff00}
+.bg11 {background-color: #ffff00}
+.bg12 {background-color: #5c5cff}
+.bg13 {background-color: #ff00ff}
+.bg14 {background-color: #00ffff}
+.bg15 {background-color: #ffffff}
 
 .fg16 {color: rgb(0, 0, 0)}
 .fg17 {color: rgb(0, 0, 95)}
