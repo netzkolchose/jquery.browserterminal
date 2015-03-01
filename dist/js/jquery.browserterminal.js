@@ -312,6 +312,17 @@
                 that.el_scroll.innerHTML = '';
             }
         })(this);
+        this.terminal.fetchLastScrollBufferLine = (function(that){
+            return function(){
+                that.scrollBufferChanged = true;
+
+                var last_entry = that.scroll_buffer.pop();
+                console.log(last_entry);
+                if (last_entry)
+                    return last_entry[0][0];
+                return null;
+            }
+        })(this);
         this.terminal.send = (function(that) {
             return function(s) {
                 that.chars += s;
@@ -524,7 +535,19 @@
                         var new_cols = size.cols || 80;
                         var new_rows = size.rows || 25;
                         if (new_cols != old_cols || new_rows != old_rows) {
+
+                            // remove cursor from buffer
+                            var tchar = that.terminal.buffer[that.terminal.cursor.row][that.terminal.cursor.col];
+                            if (that.terminal.show_cursor && tchar)
+                                tchar.attr &= ~4194304;
+                            
                             that.terminal.resize(new_cols, new_rows);
+
+                            // set new cursor to buffer
+                            tchar = that.terminal.buffer[that.terminal.cursor.row][that.terminal.cursor.col];
+                            if (that.terminal.show_cursor && tchar)
+                                tchar.attr |= 4194304;
+                            
                             if (new_cols < old_cols) {
                                 // shrink scrollbuffer
                                 for (var i=0; i < that.scroll_buffer.length; ++i) {
