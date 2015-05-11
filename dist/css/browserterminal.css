@@ -29,6 +29,7 @@
     word-wrap: normal;
     outline: 0;
     direction: ltr;
+    cursor: default;
 }
 
 .bold {font-weight: bold}

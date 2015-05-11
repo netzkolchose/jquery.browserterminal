@@ -10,6 +10,7 @@ from time import sleep, time
 from uuid import uuid4
 import codecs
 from json import loads, dumps
+from base64 import b64decode
 
 # A quick and dirty server backend for development.
 
@@ -33,6 +34,7 @@ class Terminal(object):
         if child == 0:
             closerange(3, 255)
             execl('/bin/bash', '')
+            #execl('/usr/bin/ssh', 'localhost')
         self.child = child
         self.master = master
         set_termsize(self.master, self._height, self._width)
@@ -115,13 +117,12 @@ def _read(uid):
         if res or time()-start > 10:
             return res
 
-
 @post('/write/<uid>')
 def _write(uid):
     term = terminals.get(uid)
     if not term:
         return 'Error' # TODO: return errorcode
-    term.send(request.body.read())
+    term.send(b64decode(request.body.read()))
     return ''
 
 

@@ -64,7 +64,7 @@ var server = http.createServer(function (request, response) {
         if (term) {
             var queryData = '';
             request.on('data', function(data) {queryData += data;});
-            request.on('end', function() {term.pty.write(queryData);});
+            request.on('end', function() {term.pty.write(new Buffer(queryData, 'base64'));});
             response.writeHead(200, {'Content-Type': 'text/plain'});
             response.end('');
         } else {

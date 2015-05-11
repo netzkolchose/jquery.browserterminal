@@ -72,7 +72,7 @@
                 if (evt.ctrlKey) {
                     idx = CONTROL_CHARS.indexOf(String.fromCharCode(evt.keyCode).toLowerCase());
                     if (idx != -1) {
-                        term.chars += String.fromCharCode(idx);
+                        term.chars += encode_utf8(String.fromCharCode(idx));
                         evt.stopPropagation();
                         evt.preventDefault();
                         return false;
@@ -135,7 +135,7 @@
                     if (evt.ctrlKey) {
                         idx = CONTROL_CHARS.indexOf(String.fromCharCode(char).toLowerCase());
                         if (idx != -1) {
-                            term.chars += String.fromCharCode(idx);
+                            term.chars += encode_utf8(String.fromCharCode(idx));
                             evt.stopPropagation();
                             evt.preventDefault();
                             return;
@@ -145,7 +145,7 @@
                     // FIXME - emacs Meta
                     if (evt.altKey)
                         term.chars += '\x1b';
-                    term.chars += String.fromCharCode(char);
+                    term.chars += encode_utf8(String.fromCharCode(char));
                     ret = false;
                 }
             }
@@ -221,6 +221,52 @@
         styles.push(s);
         return styles;
     }
+
+    /**
+     * mouse protocols
+     */
+    function mouse_x10(button, x, y) {
+        // CSI M CbCxCy (6 characters); all +32
+        // Cb 0=MB1 pressed, 1=MB2 pressed, 2=MB3 pressed, 3=release
+        // 4=Shift, 8=Meta, 16=Control
+        // wheel action +64
+
+        // only left button for now (0 --> 32 --> ' ')
+        return '\u001b[M'
+            + String.fromCharCode((button+32))
+            + String.fromCharCode((x+1+32)%256)
+            + String.fromCharCode((y+1+32)%256);
+    }
+    function mouse_utf8(button, x, y) {
+        // TODO
+    }
+    function mouse_sgr(button, x, y, release) {
+        return '\u001b[<'
+            + button
+            + ';'
+            + (x + 1)
+            + ';'
+            + (y + 1)
+            + ((release) ? 'm' : 'M');
+
+    }
+    function mouse_decimal() {
+        // TODO
+    }
+    var MOUSETRACKING = {
+        0: mouse_x10,
+        //1005: mouse_utf8,
+        1006: mouse_sgr
+        //1015: mouse_decimal
+    };
+
+    function encode_utf8(s) {
+        return unescape(encodeURIComponent(s));
+    }
+
+    function decode_utf8(s) {
+        return decodeURIComponent(escape(s));
+    }
     
     function BrowserTerminal(el, options) {
         this.that = this;
@@ -281,12 +327,59 @@
 
         
         // hide caret on focus and click
-        this.container.on('focus click', (function(that) {
-            return function(ev){
-                window.getSelection().collapse(that.caret_hide.firstChild, 0);
-                ev.preventDefault();
+        //this.container.on('focus click', (function(that) {
+        //    return function(ev){
+        //        window.getSelection().collapse(that.caret_hide.firstChild, 0);
+        //        ev.preventDefault();
+        //    }
+        //})(this));
+        //this.container.on('click', (function(that) {
+        //    return function(ev){
+        //        console.log(ev.target, window.getSelection());
+        //        console.log(ev);
+        //    }
+        //})(this));
+        this.mousehandler = function(that, mode, protocol) {
+            // TODO: position calculation is wrong!!!
+            // wot to do with middle (insert?) and right button?
+            return function(ev) {
+                var x = ev.pageX;
+                var y = ev.pageY;
+                var col = 0;
+                var row = 0;
+                var button = ev.button;
+
+                var i;
+                for (i=0; i < that.fitWidth.length; ++i) {
+                    if (that.fitWidth[i] >= x) {
+                        col = i;
+                        break;
+                    }
+                }
+                for (i=0; i < that.fitHeight.length; ++i) {
+                    if (that.fitHeight[i] >= y) {
+                        row = i-1;
+                        break;
+                    }
+                }
+
+                if (protocol == 1006) {
+                    that.chars += mouse_sgr(button, col, row, (ev.type == 'mouseup'));
+                    return;
+                }
+
+                if (ev.type == 'mouseup')
+                    button = 3;
+                if (ev.type == 'mousemove')
+                    button += 32;
+
+                if (!MOUSETRACKING[protocol]) {
+                    console.log('mouse tracking: unsupported protocol', protocol);
+                    return;
+                }
+                that.chars += MOUSETRACKING[protocol](button, col, row);
             }
-        })(this));
+        };
         
         // beep
         this.beepElement = new Audio('/audio/beep.mp3');
@@ -296,6 +389,43 @@
         $('body').append(this.beepElement);
         
         // callbacks
+        this.terminal.changedMouseHandling = (function(that){
+            return function(mode, protocol) {
+                that.container.off();
+                switch (mode) {
+                    case 0: return;
+                    case 9:
+                        // X10 mousedown only, wheel?
+                        that.container.on('mousedown', that.mousehandler(that, mode, protocol));
+                        break;
+                    case 1000:
+                        // mousedown, wheel?
+                        // mouseup
+                        that.container.on('mousedown', that.mousehandler(that, mode, protocol));
+                        that.container.on('mouseup', that.mousehandler(that, mode, protocol));
+                        break;
+                    //case 1001:
+                    //    // ?? not clear yet, wheel?
+                    //    break;
+                    case 1002:
+                        // mousedown
+                        // mousemove
+                        // mouseup, wheel?
+                        that.container.on('mousedown', that.mousehandler(that, mode, protocol));
+                        that.container.on('mouseup', that.mousehandler(that, mode, protocol));
+                        break;
+                    case 1003:
+                        // mousedown, wheel?
+                        // mousemove
+                        // mouseup
+                        that.container.on('mousedown', that.mousehandler(that, mode, protocol));
+                        that.container.on('mouseup', that.mousehandler(that, mode, protocol));
+                        break;
+                    default:
+                        console.log('mouse tracking: unupported mode', mode);
+                }
+            }
+        })(this);
         this.terminal.appendScrollBuffer = (function(that){
             return function(elems){
                 if (that.bufferLength) {
@@ -317,7 +447,6 @@
                 that.scrollBufferChanged = true;
 
                 var last_entry = that.scroll_buffer.pop();
-                console.log(last_entry);
                 if (last_entry)
                     return last_entry[0][0];
                 return null;
@@ -453,7 +582,7 @@
             return function() {
                 if (that.chars == '')
                     return;
-                $.post('/write/' + that.id, that.chars);
+                $.post('/write/' + that.id, btoa(that.chars));
                 that.chars = '';
             }
         };
