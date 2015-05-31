@@ -72,7 +72,7 @@
                 if (evt.ctrlKey) {
                     idx = CONTROL_CHARS.indexOf(String.fromCharCode(evt.keyCode).toLowerCase());
                     if (idx != -1) {
-                        term.chars += encode_utf8(String.fromCharCode(idx));
+                        term.chars += String.fromCharCode(idx);
                         evt.stopPropagation();
                         evt.preventDefault();
                         return false;
@@ -135,7 +135,7 @@
                     if (evt.ctrlKey) {
                         idx = CONTROL_CHARS.indexOf(String.fromCharCode(char).toLowerCase());
                         if (idx != -1) {
-                            term.chars += encode_utf8(String.fromCharCode(idx));
+                            term.chars += String.fromCharCode(idx);
                             evt.stopPropagation();
                             evt.preventDefault();
                             return;
@@ -145,7 +145,7 @@
                     // FIXME - emacs Meta
                     if (evt.altKey)
                         term.chars += '\x1b';
-                    term.chars += encode_utf8(String.fromCharCode(char));
+                    term.chars += String.fromCharCode(char);
                     ret = false;
                 }
             }
@@ -226,6 +226,8 @@
      * mouse protocols
      */
     function mouse_x10(button, x, y) {
+        // NOTE: must be send binary!
+
         // CSI M CbCxCy (6 characters); all +32
         // Cb 0=MB1 pressed, 1=MB2 pressed, 2=MB3 pressed, 3=release
         // 4=Shift, 8=Meta, 16=Control
@@ -238,7 +240,8 @@
             + String.fromCharCode((y+1+32)%256);
     }
     function mouse_utf8(button, x, y) {
-        // TODO
+        // basically identical to mouse_x10 but utf-8 encoded
+        return mouse_x10(button, x, y);
     }
     function mouse_sgr(button, x, y, release) {
         return '\u001b[<'
@@ -248,25 +251,16 @@
             + ';'
             + (y + 1)
             + ((release) ? 'm' : 'M');
-
     }
     function mouse_decimal() {
         // TODO
     }
     var MOUSETRACKING = {
         0: mouse_x10,
-        //1005: mouse_utf8,
+        1005: mouse_utf8,
         1006: mouse_sgr
         //1015: mouse_decimal
     };
-
-    function encode_utf8(s) {
-        return unescape(encodeURIComponent(s));
-    }
-
-    function decode_utf8(s) {
-        return decodeURIComponent(escape(s));
-    }
     
     function BrowserTerminal(el, options) {
         this.that = this;
@@ -363,6 +357,7 @@
                     }
                 }
 
+                // sgr mouse protocol handles button states different
                 if (protocol == 1006) {
                     that.chars += mouse_sgr(button, col, row, (ev.type == 'mouseup'));
                     return;
@@ -377,6 +372,25 @@
                     console.log('mouse tracking: unsupported protocol', protocol);
                     return;
                 }
+
+                // x10 protocol is binary data - needs special transport encoding
+                if (!protocol) {
+                    // FIXME: serialize leftover data and mouse status requests
+                    // send leftover input
+                    if (that.chars) {
+                        $.post('/write/' + that.id,
+                            JSON.stringify({c: that.chars, e: 'utf-8'})
+                        );
+                        that.chars = '';
+                    }
+                    // send mouse status
+                    $.post('/write/' + that.id,
+                        JSON.stringify({c: btoa(mouse_x10(button, col, row)), e: 'base64'})
+                    );
+                    return;
+                }
+
+                // all other protocols go with normal delivery in utf-8
                 that.chars += MOUSETRACKING[protocol](button, col, row);
             }
         };
@@ -582,7 +596,8 @@
             return function() {
                 if (that.chars == '')
                     return;
-                $.post('/write/' + that.id, btoa(that.chars));
+                 // FIXME: utf-8 handing broken for illegal utf8 chars in MSR
+                $.post('/write/' + that.id,  JSON.stringify({c: that.chars, e: 'utf-8'})); //btoa(that.chars));
                 that.chars = '';
             }
         };

@@ -122,7 +122,15 @@ def _write(uid):
     term = terminals.get(uid)
     if not term:
         return 'Error' # TODO: return errorcode
-    term.send(b64decode(request.body.read()))
+
+    read = loads(request.body.read())
+    # binary always comes as base64
+    # convert others to right encoding
+    if read['e'] == 'base64':
+        data = read['c'].decode('base64')
+    else:
+        data = read['c'].encode(read['e'])
+    term.send(data)
     return ''
 
 

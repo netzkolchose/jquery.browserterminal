@@ -64,7 +64,12 @@ var server = http.createServer(function (request, response) {
         if (term) {
             var queryData = '';
             request.on('data', function(data) {queryData += data;});
-            request.on('end', function() {term.pty.write(new Buffer(queryData, 'base64'));});
+            request.on('end', function() {
+                var read = JSON.parse(queryData);
+                // binary data comes always as base64
+                // only utf8 as text encoding for now
+                term.pty.write(new Buffer(read.c, read.e));
+            });
             response.writeHead(200, {'Content-Type': 'text/plain'});
             response.end('');
         } else {
