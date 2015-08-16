@@ -30,6 +30,9 @@
     outline: 0;
     direction: ltr;
     cursor: default;
+    font-family: "DejaVu Sans Mono", "Courier New", monospace;
+    font-size: 0.75em;
+    line-height: 14px;
 }
 
 .bold {font-weight: bold}
@@ -57,6 +60,11 @@
 }
 .c:before {
     content: '\00a0';
+    position: absolute;
+    left: 0;
+}
+.fw-corr.c:before {
+    content: '\00a0\00a0';
     position: absolute;
     left: 0;
 }

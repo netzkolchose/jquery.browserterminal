@@ -197,7 +197,7 @@
     }();
     
     // FIXME: cleanup this ugly mess
-    function getStyles(num, gb) {
+    function getStyles(num, gb, fullwidth) {
         var fg_rgb = num&67108864 && num&134217728;
         var bg_rgb = num&16777216 && num&33554432;
         // if (not RGB) and (fg set) and (bold set) and (fg < 8)
@@ -213,6 +213,8 @@
             styles[0] += ' bg-1';
         if (inverse && !(num&16777216))
             styles[0] += ' fg-1';
+        if (fullwidth)
+            styles[0] += ' fw';
         var s = '';
         if (fg_rgb)
             s += ((inverse)?'background-color:rgb(':'color:rgb(') + [num>>>8&255, gb>>>24, gb>>>8&255].join(',') + ');';
@@ -252,16 +254,77 @@
             + (y + 1)
             + ((release) ? 'm' : 'M');
     }
-    function mouse_decimal() {
-        // TODO
+    function mouse_decimal(button, x, y) {
+        return '\u001b['
+            + (button+32)
+            + ';'
+            + (x + 1)
+            + ';'
+            + (y + 1)
+            + 'M';
     }
     var MOUSETRACKING = {
         0: mouse_x10,
         1005: mouse_utf8,
-        1006: mouse_sgr
-        //1015: mouse_decimal
+        1006: mouse_sgr,
+        1015: mouse_decimal
     };
-    
+
+    function getStyle(el,styleProp) {
+        var camelize = function (str) {
+            return str.replace(/\-(\w)/g, function(str, letter){
+                return letter.toUpperCase();
+            });
+        };
+        if (el.currentStyle) {
+            return el.currentStyle[camelize(styleProp)];
+        } else if (document.defaultView && document.defaultView.getComputedStyle) {
+            return document.defaultView.getComputedStyle(el,null)
+                .getPropertyValue(styleProp);
+        } else {
+            return el.style[camelize(styleProp)];
+        }
+    }
+
+    function calculateFontMetrics(terminal) {
+        var canvas = document.getElementById('font-metrics'),
+            context = canvas.getContext('2d');
+        var metrics = {font_widths: []};
+        metrics['font-size'] = getStyle($(terminal.container)[0], 'font-size');
+        metrics['font-family'] = getStyle($(terminal.container)[0], 'font-family');
+        metrics['line-height'] = getStyle($(terminal.container)[0], 'line-height');
+
+        context.font = metrics['font-size'] + ' ' + metrics['font-family'];
+        metrics['font-width'] = Math.max(
+            context.measureText('MMMMM').width,
+            context.measureText('mmmmm').width
+        );
+
+        // build char width array
+        for (var i=0; i<0x2e79; ++i) { // only check up to CJK symbols, any higher gets the correction automatically
+            metrics.font_widths.push(
+                context.measureText(Array(6).join(String.fromCharCode(i))).width == metrics['font-width']
+            );
+        }
+        metrics['font-width'] /= 5;
+
+        // insert css rule
+        var style = $('<style>')
+            .attr('id', 'correction_' + terminal.cssId)
+            .attr('type', 'text/css')
+            .text(''
+            + '._tw span.hw-' + terminal.cssId + ' {text-align: center; display: inline-block; width: '+ metrics['font-width'] +'px; height: '+ metrics['line-height'] +'; line-height: '+ metrics['line-height'] +'}\n'
+            + '._tw span.fw-' + terminal.cssId + ' {text-align: center; display: inline-block; width: '+ parseFloat(metrics['font-width'])*2 +'px; height: '+ metrics['line-height'] +'; line-height: '+ metrics['line-height'] +'}'
+        );
+        style.appendTo('head');
+        metrics['cssrule-id'] = 'correction_' + terminal.cssId;
+        metrics['hw-class'] = ' hw-' + terminal.cssId;
+        metrics['fw-class'] = ' fw-' + terminal.cssId;
+
+        return metrics;
+    }
+
+    var _cssId = 0;
     function BrowserTerminal(el, options) {
         this.that = this;
         this.el = $(el);
@@ -270,15 +333,19 @@
         this.el_scroll = this.container.children('.scrollbuffer')[0];
         this.el_buffer = this.container.children('.buffer')[0];
         this.caret_hide = this.container.children('.caret-hide')[0];
-        this.terminal = new AnsiTerminal(options.initialSize[0], options.initialSize[1]);
+        this.terminal = new AnsiTerminal(options.initialSize[0], options.initialSize[1], options.bufferLength);
         this.parser = new AnsiParser(this.terminal);
         this.chars = '';
-        this.scroll_buffer = [];
-        this.bufferLength = options.bufferLength;
         this.inputPolling = options.inputPolling;
-        this.scrollBufferChanged = false;
         this.resizeLock = false;
         this.resizable = options.resizable;
+        this._title = '';
+
+        this.fragmentCache = {};
+
+        // temporarily calculate font metrics
+        this.cssId = _cssId++|0;
+        this.fontMetrics = calculateFontMetrics(this);
 
         // calculate fitting arrays [cols/rows] --> width/height
         // magic 1 for width is needed to avoid a useless horizontal scroll bar
@@ -292,7 +359,7 @@
             el.html(new Array(i * 20 + 1).join('M'));
             var width = this.container.outerWidth();
             for (var j = 0; j < 20; j++) {
-                this.fitWidth.push(Math.ceil((width - old_width) / 20 * j) + old_width + 1); // magic 1
+                this.fitWidth.push(Math.ceil((width - old_width) / 20 * j) + old_width + 2); // magic 2 now coz of safari - FIXME
             }
             old_width = width;
         }
@@ -304,7 +371,7 @@
             el.html(new Array(i * 10 + 1).join('M\n').slice(0, -1));
             var height = this.container.outerHeight();
             for (var j = 0; j < 10; j++) {
-                this.fitHeight.push(Math.ceil((height - old_height) / 10 * j) + old_height);
+                this.fitHeight.push(Math.ceil((height - old_height) / 10 * j) + old_height + 1); // magic 1
             }
             old_height = height;
         }
@@ -409,12 +476,15 @@
                 switch (mode) {
                     case 0: return;
                     case 9:
-                        // X10 mousedown only, wheel?
+                        // X10 mousedown only
+                        // wheel?
                         that.container.on('mousedown', that.mousehandler(that, mode, protocol));
                         break;
                     case 1000:
-                        // mousedown, wheel?
+                        // press and release events
+                        // mousedown
                         // mouseup
+                        // wheel?
                         that.container.on('mousedown', that.mousehandler(that, mode, protocol));
                         that.container.on('mouseup', that.mousehandler(that, mode, protocol));
                         break;
@@ -422,48 +492,26 @@
                     //    // ?? not clear yet, wheel?
                     //    break;
                     case 1002:
+                        // press, release and onpress move events
                         // mousedown
                         // mousemove
-                        // mouseup, wheel?
+                        // mouseup
+                        // wheel?
                         that.container.on('mousedown', that.mousehandler(that, mode, protocol));
                         that.container.on('mouseup', that.mousehandler(that, mode, protocol));
                         break;
                     case 1003:
-                        // mousedown, wheel?
+                        // press, release, move events
+                        // mousedown
                         // mousemove
                         // mouseup
+                        // wheel?
                         that.container.on('mousedown', that.mousehandler(that, mode, protocol));
                         that.container.on('mouseup', that.mousehandler(that, mode, protocol));
                         break;
                     default:
                         console.log('mouse tracking: unupported mode', mode);
                 }
-            }
-        })(this);
-        this.terminal.appendScrollBuffer = (function(that){
-            return function(elems){
-                if (that.bufferLength) {
-                    that.scrollBufferChanged = true;
-                    that.scroll_buffer.push([[elems], null]);
-                    while (that.scroll_buffer.length >= that.bufferLength)
-                        that.scroll_buffer.shift();
-                }
-            }
-        })(this);
-        this.terminal.clearScrollBuffer = (function(that){
-            return function(){
-                that.scroll_buffer = [];
-                that.el_scroll.innerHTML = '';
-            }
-        })(this);
-        this.terminal.fetchLastScrollBufferLine = (function(that){
-            return function(){
-                that.scrollBufferChanged = true;
-
-                var last_entry = that.scroll_buffer.pop();
-                if (last_entry)
-                    return last_entry[0][0];
-                return null;
             }
         })(this);
         this.terminal.send = (function(that) {
@@ -479,16 +527,73 @@
         this.setTitle = options.setTitle || function() {};
 
         this.write = function(s) {
-            // remove cursor from buffer
-            var tchar = this.terminal.buffer[this.terminal.cursor.row][this.terminal.cursor.col];
-            if (this.terminal.show_cursor && tchar)
-                        tchar.attr &= ~4194304;
             // apply all changes to terminal
             this.parser.parse(s);
-            // set new cursor to buffer
-            tchar = this.terminal.buffer[this.terminal.cursor.row][this.terminal.cursor.col];
+
+            // update all stuff
+
+            var fragments = {};
+
+            // scroll output
+            var new_el = this.el_scroll.cloneNode(false);
+            for (var i=0; i<this.terminal.screen.scrollbuffer.length; ++i) {
+                var row = this.terminal.screen.scrollbuffer[i];
+                var id = row.uniqueId;
+                if (!this.fragmentCache[id] || this.fragmentCache[id].version !== row.version) {
+                    this.fragmentCache[id] = {
+                        version: row.version,
+                        fragment: this.createPrintFragment([row])}
+                }
+                new_el.appendChild(this.fragmentCache[id].fragment.cloneNode(true));
+                fragments[i] = this.fragmentCache[id];
+            }
+            this.el_scroll.parentNode.replaceChild(new_el, this.el_scroll);
+            this.el_scroll = new_el;
+
+
+            // terminal main output
+
+            // place cursor temporarily in buffer - needed to simplify fragment creation
+            var tchar = this.terminal.screen.buffer[this.terminal.cursor.row].cells[this.terminal.cursor.col];
             if (this.terminal.show_cursor && tchar)
-                    tchar.attr |= 4194304;
+                        tchar.attr |= 4194304;
+            this.terminal.screen.buffer[this.terminal.cursor.row].version++;
+
+            var new_buf = this.el_buffer.cloneNode(false);
+            for (i=0; i<this.terminal.screen.buffer.length; ++i) {
+                row = this.terminal.screen.buffer[i];
+                id = row.uniqueId;
+                if (!this.fragmentCache[id] || this.fragmentCache[id].version !== row.version) {
+                    this.fragmentCache[id] = {
+                        version: row.version,
+                        fragment: this.createPrintFragment([row])}
+                }
+                new_el.appendChild(this.fragmentCache[id].fragment.cloneNode(true));
+                fragments[i] = this.fragmentCache[id];
+            }
+            this.el_buffer.parentNode.replaceChild(new_buf, this.el_buffer);
+            this.el_buffer = new_buf;
+
+            // remove cursor from buffer
+            tchar = this.terminal.screen.buffer[this.terminal.cursor.row].cells[this.terminal.cursor.col];
+            if (this.terminal.show_cursor && tchar)
+                    tchar.attr &= ~4194304;
+            this.terminal.screen.buffer[this.terminal.cursor.row].version++;
+
+            // needed to clear old fragments from cache
+            this.fragmentCache = fragments;
+
+            // title
+            if (this._title !== this.terminal.title) {
+                this._title = this.terminal.title;
+                this.setTitle.call(this.el, this._title);
+            }
+
+            // scroll down - lazy to avoid early reflow
+            var that = this;
+            setTimeout(function() {
+                that.container[0].scrollTop = that.container[0].scrollHeight;
+            }, 0);
         };
 
         this.ckm = function(s) {
@@ -515,49 +620,96 @@
                 attr = 0,
                 old_gb = 0,
                 gb = 0,
+                width = 1,
+                code = 0,
                 styles;
             for (var i=0; i<buffer.length; ++i) {
-                for (var j=0; j<buffer[i].length; ++j) {
-                    attr = buffer[i][j].attr;
-                    gb = buffer[i][j].gb;
-                    if ((old_attr !== attr) || (old_gb !== gb)) {
-                        if (old_attr || old_gb) {
-                            span.textContent = s;
-                            frag.appendChild(span);
-                            s = '';
-                        }
-                        if (attr || gb) {
-                            if (s) {
-                                frag.appendChild(document.createTextNode(s));
+                for (var j=0; j<buffer[i].cells.length; ++j) {
+                    attr = buffer[i].cells[j].attr;
+                    gb = buffer[i].cells[j].gb;
+                    width = buffer[i].cells[j].width;
+                    code = buffer[i].cells[j].c.charCodeAt(0)|0;
+                    if (width && code<0x2e80 && (this.fontMetrics.font_widths[code] || buffer[i].cells[j].c=='')) {
+                        if ((old_attr !== attr) || (old_gb !== gb)) {
+                            if (old_attr || old_gb) {
+                                span.textContent = s;
+                                frag.appendChild(span);
                                 s = '';
                             }
-                            span = document.createElement('span');
-                            styles = getStyles(attr, gb);
-                            // classes
-                            if (styles[0]) {
-                                clas = document.createAttribute('class');
-                                clas.value = styles[0];
-                                span.setAttributeNode(clas);
+                            if (attr || gb) {
+                                if (s) {
+                                    frag.appendChild(document.createTextNode(s));
+                                    s = '';
+                                }
+                                span = document.createElement('span');
+                                styles = getStyles(attr, gb, (width == 2));
+                                // classes
+                                if (styles[0]) {
+                                    clas = document.createAttribute('class');
+                                    clas.value = styles[0];
+                                    span.setAttributeNode(clas);
+                                }
+                                // style
+                                if (styles[1]) {
+                                    var style = document.createAttribute('style');
+                                    style.value = styles[1];
+                                    span.setAttributeNode(style);
+                                }
+                                // cursor
+                                if (attr & 4194304) {
+                                    var data_contents = document.createAttribute('data-contents');
+                                    data_contents.value = buffer[i].cells[j].c || '\xa0';
+                                    span.setAttributeNode(data_contents);
+                                    if (this.terminal.blinking_cursor)
+                                        clas.value += ' blc';
+                                }
                             }
-                            // style
-                            if (styles[1]) {
-                                var style = document.createAttribute('style');
-                                style.value = styles[1];
-                                span.setAttributeNode(style);
-                            }
-                            // cursor
-                            if (attr & 4194304) {
-                                var data_contents = document.createAttribute('data-contents');
-                                data_contents.value = buffer[i][j].c || '\xa0';
-                                span.setAttributeNode(data_contents);
-                                if (this.terminal.blinking_cursor)
-                                    clas.value += ' blc';
-                            }
+                            old_attr = attr;
+                            old_gb = gb;
                         }
-                        old_attr = attr;
-                        old_gb = gb;
+                        s += buffer[i].cells[j].c || '\xa0';
+                    } else if (width == 0) {
+                        s += buffer[i].cells[j].c;
+                    } else if (width == 2 || !this.fontMetrics.font_widths[buffer[i].cells[j].c.charCodeAt(0)]) {
+                        if (true) {
+                            if (old_attr || old_gb) {
+                                span.textContent = s;
+                                frag.appendChild(span);
+                                s = '';
+                            }
+                            if (true) {
+                                if (s) {
+                                    frag.appendChild(document.createTextNode(s));
+                                    s = '';
+                                }
+                                span = document.createElement('span');
+                                styles = getStyles(attr, gb, true);
+                                // classes
+                                if (styles[0]) {
+                                    clas = document.createAttribute('class');
+                                    clas.value = styles[0] + ((width==1) ? this.fontMetrics['hw-class']: this.fontMetrics['fw-class']+' fw-corr');
+                                    span.setAttributeNode(clas);
+                                }
+                                // style
+                                if (styles[1]) {
+                                    var style = document.createAttribute('style');
+                                    style.value = styles[1];
+                                    span.setAttributeNode(style);
+                                }
+                                // cursor
+                                if (attr & 4194304) {
+                                    var data_contents = document.createAttribute('data-contents');
+                                    data_contents.value = buffer[i].cells[j].c || '\xa0';
+                                    span.setAttributeNode(data_contents);
+                                    if (this.terminal.blinking_cursor)
+                                        clas.value += ' blc';
+                                }
+                            }
+                            old_attr = -1;
+                            old_gb = -1;
+                        }
+                        s += buffer[i].cells[j].c;
                     }
-                    s += buffer[i][j].c || '\xa0';
                 }
                 if (old_attr || old_gb) {
                     old_attr = 0;
@@ -606,58 +758,16 @@
             return function(s) {
                 var old_string = '';
                 if (s) {
-                    
                     // dont alter any terminal state while resizing is ongoing
                     if (that.resizeLock) {
                         setTimeout(function(){that.read(that)(s);}, 100);
                         return;
                     }
-
-                    var oldBuffer = that.terminal.buffer;
-                    
                     // try to keep responsive on fast big data
                     if (s.length > 32000)
                         old_string = s.slice(32000);
                     that.write(s.slice(0, 32000));
-
-                    // scroll area
-                    if (that.bufferLength && !old_string) {
-                        if (that.terminal.buffer == that.terminal.normal_buffer) {
-                            if (that.scrollBufferChanged) {
-                                var new_el = that.el_scroll.cloneNode(false);
-                                for (var i = 0; i<that.scroll_buffer.length; ++i) {
-                                    new_el.appendChild(
-                                        (that.scroll_buffer[i][1] ||
-                                            (that.scroll_buffer[i][1]=that.createPrintFragment(that.scroll_buffer[i][0]))
-                                        ).cloneNode(true));
-                                }
-                                that.el_scroll.parentNode.replaceChild(new_el, that.el_scroll);
-                                that.el_scroll = new_el;
-                                that.scrollBufferChanged = false;
-                            }
-                        }
-                        // activate / deactivate scroll area on buffer changes
-                        if (oldBuffer != that.terminal.buffer) {
-                            if (that.terminal.buffer == that.terminal.normal_buffer)
-                                that.el_scroll.style.display = 'inline';
-                            else
-                                that.el_scroll.style.display = 'none';
-                        }
-                    }
-                    // terminal output
-                    var new_buf = that.el_buffer.cloneNode(false);
-                    new_buf.appendChild(that.createPrintFragment(that.terminal.buffer));
-                    that.el_buffer.parentNode.replaceChild(new_buf, that.el_buffer);
-                    that.el_buffer = new_buf;
-
-                    // title
-                    that.setTitle.call(that.el, that.terminal.title);
-                    // scroll down - lazy to avoid early reflow
-                    setTimeout(function() {
-                        that.container[0].scrollTop = that.container[0].scrollHeight;
-                    }, 0);
                 }
-                
                 // continuation
                 if (old_string)
                     setTimeout(function(){that.read(that)(old_string);}, 10);
@@ -669,6 +779,8 @@
         this.resizeTerminal = function(cols, rows) {
             if ((this.id === undefined) || (cols < 2) || (rows < 2))
                 return;
+            if (this.resizeLock)
+                return;
             this.resizeLock = true;
             $.post('/resize/' + this.id,
                 JSON.stringify([cols, rows]),
@@ -679,67 +791,22 @@
                         var new_cols = size.cols || 80;
                         var new_rows = size.rows || 25;
                         if (new_cols != old_cols || new_rows != old_rows) {
-
-                            // remove cursor from buffer
-                            var tchar = that.terminal.buffer[that.terminal.cursor.row][that.terminal.cursor.col];
-                            if (that.terminal.show_cursor && tchar)
-                                tchar.attr &= ~4194304;
                             
                             that.terminal.resize(new_cols, new_rows);
 
-                            // set new cursor to buffer
-                            tchar = that.terminal.buffer[that.terminal.cursor.row][that.terminal.cursor.col];
-                            if (that.terminal.show_cursor && tchar)
-                                tchar.attr |= 4194304;
-                            
-                            if (new_cols < old_cols) {
-                                // shrink scrollbuffer
-                                for (var i=0; i < that.scroll_buffer.length; ++i) {
-                                    that.scroll_buffer[i][0][0] = that.scroll_buffer[i][0][0].slice(0, new_cols);
-                                    that.scroll_buffer[i][1] = null;
-                                }
-                                that.scrollBufferChanged = true;
-                            }
                             // adjust container height and width
                             that.container.width(that.fitWidth[new_cols]+'px');
                             that.container.height(that.fitHeight[new_rows]+'px');
                             
-                            // redraw content - FIXME: ugly code, merge with read
-                            // scroll area
-                            if (that.bufferLength) {
-                                if (that.terminal.buffer == that.terminal.normal_buffer) {
-                                    if (that.scrollBufferChanged) {
-                                        var new_el = that.el_scroll.cloneNode(false);
-                                        for (var i=0; i<that.scroll_buffer.length; ++i) {
-                                            new_el.appendChild(
-                                                (that.scroll_buffer[i][1] ||
-                                                    (that.scroll_buffer[i][1]=that.createPrintFragment(that.scroll_buffer[i][0]))
-                                                ).cloneNode(true));
-                                        }
-                                        that.el_scroll.parentNode.replaceChild(new_el, that.el_scroll);
-                                        that.el_scroll = new_el;
-                                        that.scrollBufferChanged = false;
-                                    }
-                                }
-                            }
-                            // terminal output
-                            var new_buf = that.el_buffer.cloneNode(false);
-                            new_buf.appendChild(that.createPrintFragment(that.terminal.buffer));
-                            that.el_buffer.parentNode.replaceChild(new_buf, that.el_buffer);
-                            that.el_buffer = new_buf;
-
-                            // title
-                            that.setTitle.call(that.el, that.terminal.title);
-                            // scroll down - lazy to avoid early reflow
-                            setTimeout(function() {
-                                that.container[0].scrollTop = that.container[0].scrollHeight;
-                            }, 0);
+                            that.write('');
                         }
                         that.resizeLock = false;
                     }
                 })(this));
         };
         this.resize = function(width, height) {
+            if (this.resizeLock)
+                return;
             var cols = 0;
             var rows = 0;
             var i;

@@ -1,6 +1,6 @@
 {
   "name": "jquery.browserterminal",
-  "version": "0.0.2",
+  "version": "0.1.0-alpha",
   "description": "A jquery based browser terminal.",
   "main": "dist/js/jquery.browserterminal.js",
   "scripts": {

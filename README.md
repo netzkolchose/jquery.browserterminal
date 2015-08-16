@@ -1,6 +1,12 @@
-A jquery based browser terminal using node-ansiparser and node-ansiterminal.
+A jquery based browser terminal emulator using
+[node-ansiparser](https://github.com/netzkolchose/node-ansiparser) and
+[node-ansiterminal](https://github.com/netzkolchose/node-ansiterminal).
 
-**NOTE: This is proof of concept alpha code!**
+### FEATURES
+* Unicode support (output only atm)
+* mouse support
+* resizable
+* true color
 
 ### INSTALL
 
@@ -17,8 +23,8 @@ Run `npm install && npm start` and point your browser to http://localhost:8000
 Run `python server.py` and point your browser to http://localhost:8000
 
 ### TODO
+* Unicode input
 * Mutation Observer for style attributes / automatic rescaling
-* mouse support
 * make read/write callbacks configurable
 * tests
 * amd/bower support
