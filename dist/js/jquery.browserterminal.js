@@ -333,7 +333,7 @@
         this.el_scroll = this.container.children('.scrollbuffer')[0];
         this.el_buffer = this.container.children('.buffer')[0];
         this.caret_hide = this.container.children('.caret-hide')[0];
-        this.terminal = new AnsiTerminal(options.initialSize[0], options.initialSize[1], options.bufferLength);
+        this.terminal = new ansiterminal.AnsiTerminal(options.initialSize[0], options.initialSize[1], options.bufferLength);
         this.parser = new AnsiParser(this.terminal);
         this.chars = '';
         this.inputPolling = options.inputPolling;
